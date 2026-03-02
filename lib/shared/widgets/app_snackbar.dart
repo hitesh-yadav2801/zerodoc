@@ -8,6 +8,8 @@ abstract final class AppSnackBar {
     required String message,
     bool isError = false,
     bool isSuccess = false,
+    String? actionLabel,
+    VoidCallback? onAction,
   }) {
     final dotColor = isError
         ? AppColors.terracotta
@@ -41,6 +43,13 @@ abstract final class AppSnackBar {
             ],
           ),
           duration: const Duration(seconds: 3),
+          action: actionLabel != null && onAction != null
+              ? SnackBarAction(
+                  label: actionLabel,
+                  textColor: AppColors.sage,
+                  onPressed: onAction,
+                )
+              : null,
         ),
       );
   }

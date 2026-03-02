@@ -11,7 +11,6 @@ class ZeroDocApp extends StatelessWidget {
       title: 'ZeroDoc',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
       routerConfig: AppRouter.router,
     );
   }
