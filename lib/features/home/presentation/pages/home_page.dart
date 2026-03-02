@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zerodoc/core/constants/app_spacing.dart';
+import 'package:zerodoc/core/constants/app_strings.dart';
 import 'package:zerodoc/core/theme/app_colors.dart';
 import 'package:zerodoc/core/theme/app_typography.dart';
 
@@ -24,11 +25,23 @@ class HomePage extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    _greeting,
-                    style: AppTypography.pageTitle(
-                      color: AppColors.ink,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _greeting,
+                        style: AppTypography.pageTitle(
+                          color: AppColors.ink,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        AppStrings.slogan,
+                        style: AppTypography.caption(
+                          color: AppColors.inkMuted,
+                        ),
+                      ),
+                    ],
                   ),
                   FloatingActionButton.small(
                     heroTag: 'home_fab',
@@ -52,7 +65,6 @@ class HomePage extends StatelessWidget {
               ),
             ),
           ),
-          // Empty state
           SliverFillRemaining(
             hasScrollBody: false,
             child: Center(

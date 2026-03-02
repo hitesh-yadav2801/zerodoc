@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zerodoc/core/constants/app_spacing.dart';
+import 'package:zerodoc/core/constants/app_strings.dart';
 import 'package:zerodoc/core/theme/app_colors.dart';
 import 'package:zerodoc/core/theme/app_typography.dart';
 
@@ -120,7 +121,7 @@ class SettingsPage extends StatelessWidget {
                   onTap: () {
                     showLicensePage(
                       context: context,
-                      applicationName: 'ZeroDoc',
+                      applicationName: AppStrings.appName,
                       applicationVersion: '1.0.0',
                     );
                   },
@@ -139,6 +140,28 @@ class SettingsPage extends StatelessWidget {
                 'Clear processed files',
                 style: AppTypography.label(color: AppColors.terracotta),
               ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xxxl),
+
+          // App branding footer
+          Center(
+            child: Column(
+              children: [
+                Text(
+                  AppStrings.appName,
+                  style: AppTypography.sectionHeader(
+                    color: AppColors.slate,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  AppStrings.slogan,
+                  style: AppTypography.caption(
+                    color: AppColors.inkMuted,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: AppSpacing.xxxl),

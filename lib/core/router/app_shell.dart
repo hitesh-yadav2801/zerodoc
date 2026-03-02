@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:zerodoc/shared/widgets/tools_drawer.dart';
 
 class AppShell extends StatelessWidget {
   const AppShell({required this.child, super.key});
@@ -10,6 +9,7 @@ class AppShell extends StatelessWidget {
 
   int _currentIndex(BuildContext context) {
     final location = GoRouterState.of(context).uri.path;
+    if (location.startsWith('/tools')) return 1;
     if (location.startsWith('/settings')) return 2;
     return 0;
   }
@@ -20,25 +20,10 @@ class AppShell extends StatelessWidget {
       case 0:
         context.go('/home');
       case 1:
-        _showToolsDrawer(context);
+        context.go('/tools');
       case 2:
         context.go('/settings');
     }
-  }
-
-  void _showToolsDrawer(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.75,
-      ),
-      builder: (_) => const ToolsDrawer(),
-    );
   }
 
   @override
