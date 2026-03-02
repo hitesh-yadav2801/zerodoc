@@ -12,6 +12,7 @@ dependencies:
     sdk: flutter
   flutter_animate: ^4.5.2
   flutter_hooks: ^0.20.5
+  flutter_native_splash: ^2.4.4
   flutter_riverpod: ^2.6.1
   fpdart: ^1.1.0
   go_router: ^14.8.1
@@ -36,3 +37,10 @@ flutter:
 
   assets:
     - assets/textures/
+
+flutter_native_splash:
+  color: "#F2F0E9"
+  color_dark: "#1A1A1A"
+  android_12:
+    color: "#F2F0E9"
+    color_dark: "#1A1A1A"

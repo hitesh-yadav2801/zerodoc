@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:zerodoc/core/constants/app_spacing.dart';
+import 'package:zerodoc/core/constants/app_strings.dart';
 import 'package:zerodoc/core/theme/app_colors.dart';
 import 'package:zerodoc/core/theme/app_typography.dart';
-import 'package:zerodoc/shared/widgets/bottom_sheet_handle.dart';
 import 'package:zerodoc/shared/widgets/tool_card.dart';
 
-class ToolsDrawer extends StatelessWidget {
-  const ToolsDrawer({super.key});
+class ToolsPage extends StatelessWidget {
+  const ToolsPage({super.key});
 
   static const _categories = <_ToolCategoryData>[
     _ToolCategoryData(
@@ -54,34 +54,28 @@ class ToolsDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return SafeArea(
+      child: ListView(
+        padding: AppSpacing.pagePadding.copyWith(top: 24),
         children: [
-          const Center(child: BottomSheetHandle()),
-          const SizedBox(height: AppSpacing.lg),
           Text(
             'All Tools',
-            style: AppTypography.sectionHeader(color: AppColors.ink),
+            style: AppTypography.pageTitle(color: AppColors.ink),
           ),
-          const SizedBox(height: AppSpacing.xl),
-          Expanded(
-            child: ListView.separated(
-              itemCount: _categories.length,
-              separatorBuilder: (_, __) =>
-                  const SizedBox(height: AppSpacing.xl),
-              padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
-              itemBuilder: (context, index) {
-                final cat = _categories[index];
-                return _ToolCategorySection(
-                  label: cat.label,
-                  tools: cat.tools,
-                );
-              },
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            AppStrings.slogan,
+            style: AppTypography.caption(color: AppColors.inkMuted),
+          ),
+          const SizedBox(height: AppSpacing.xxl),
+          for (int i = 0; i < _categories.length; i++) ...[
+            if (i > 0) const SizedBox(height: AppSpacing.xl),
+            _ToolCategorySection(
+              label: _categories[i].label,
+              tools: _categories[i].tools,
             ),
-          ),
+          ],
+          const SizedBox(height: AppSpacing.xxxl),
         ],
       ),
     );
@@ -101,7 +95,10 @@ class _ToolCategoryData {
 }
 
 class _ToolCategorySection extends StatelessWidget {
-  const _ToolCategorySection({required this.label, required this.tools});
+  const _ToolCategorySection({
+    required this.label,
+    required this.tools,
+  });
 
   final String label;
   final List<_ToolDef> tools;
@@ -124,10 +121,7 @@ class _ToolCategorySection extends StatelessWidget {
                 child: ToolCard(
                   icon: tool.icon,
                   label: tool.label,
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                    Navigator.of(context).pop();
-                  },
+                  onTap: HapticFeedback.lightImpact,
                 ),
               ),
             );
