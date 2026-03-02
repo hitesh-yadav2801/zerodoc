@@ -14,6 +14,7 @@ class FileCard extends StatefulWidget {
     this.fileSize,
     this.subtitle,
     this.onDismissed,
+    this.dismissKey,
     super.key,
   });
 
@@ -23,6 +24,7 @@ class FileCard extends StatefulWidget {
   final String? subtitle;
   final VoidCallback onTap;
   final VoidCallback? onDismissed;
+  final String? dismissKey;
 
   @override
   State<FileCard> createState() => _FileCardState();
@@ -112,7 +114,7 @@ class _FileCardState extends State<FileCard> {
     if (widget.onDismissed == null) return _buildCard();
 
     return Dismissible(
-      key: ValueKey(widget.fileName),
+      key: ValueKey(widget.dismissKey ?? widget.fileName),
       direction: DismissDirection.endToStart,
       onDismissed: (_) {
         HapticFeedback.heavyImpact();
