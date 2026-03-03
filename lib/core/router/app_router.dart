@@ -9,6 +9,7 @@ import 'package:zerodoc/features/splash/presentation/pages/splash_page.dart';
 import 'package:zerodoc/features/tools/merge/presentation/merge_page.dart';
 import 'package:zerodoc/features/tools/presentation/pages/placeholder_tool_page.dart';
 import 'package:zerodoc/features/tools/presentation/pages/tools_page.dart';
+import 'package:zerodoc/features/tools/rotate/presentation/rotate_page.dart';
 import 'package:zerodoc/features/tools/split/presentation/split_page.dart';
 import 'package:zerodoc/features/workbench/presentation/pages/workbench_page.dart';
 
@@ -20,6 +21,7 @@ abstract final class AppRouter {
     return switch (toolId) {
       ToolRoutes.merge => const MergePage(),
       ToolRoutes.split => const SplitPage(),
+      ToolRoutes.rotate || ToolRoutes.reorder => const RotatePage(),
       _ => PlaceholderToolPage(toolId: toolId),
     };
   }
