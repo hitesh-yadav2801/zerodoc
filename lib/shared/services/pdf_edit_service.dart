@@ -110,6 +110,29 @@ class PdfEditService {
     return bytes;
   }
 
+  /// Creates a new PDF where each page is a rasterized JPEG image.
+  Future<Uint8List> compressViaRasterize(
+    String filePath,
+    List<Uint8List> pageImages,
+    List<Size> pageSizes,
+  ) async {
+    final result = PdfDocument();
+
+    for (var i = 0; i < pageImages.length; i++) {
+      final pageSize = pageSizes[i];
+      result.pageSettings
+        ..size = pageSize
+        ..margins.all = 0;
+      final page = result.pages.add();
+      final image = PdfBitmap(pageImages[i]);
+      page.graphics.drawImage(image, Offset.zero & pageSize);
+    }
+
+    final bytes = Uint8List.fromList(await result.save());
+    result.dispose();
+    return bytes;
+  }
+
   Future<int> getPageCount(Uint8List pdfBytes) async {
     try {
       final doc = PdfDocument(inputBytes: pdfBytes);

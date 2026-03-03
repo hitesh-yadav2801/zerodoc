@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:pdfx/pdfx.dart';
 import 'package:zerodoc/core/utils/app_logger.dart';
@@ -67,6 +68,41 @@ class PdfService {
       return thumbnails;
     } on Exception catch (e, st) {
       log.e('Failed to render all pages', error: e, stackTrace: st);
+      return [];
+    }
+  }
+
+  /// Renders all pages as JPEG at the given [quality] (1-100).
+  /// Returns a list of (imageBytes, pageSize) pairs.
+  Future<List<(Uint8List?, Size)>> renderAllPagesForCompress(
+    String filePath, {
+    int quality = 60,
+  }) async {
+    try {
+      final document = await PdfDocument.openFile(filePath);
+      final results = <(Uint8List?, Size)>[];
+
+      for (var i = 1; i <= document.pagesCount; i++) {
+        try {
+          final page = await document.getPage(i);
+          final pageSize = Size(page.width, page.height);
+          final pageImage = await page.render(
+            width: page.width,
+            height: page.height,
+            quality: quality,
+          );
+          await page.close();
+          results.add((pageImage?.bytes, pageSize));
+        } on Exception catch (e) {
+          log.w('Failed to render page $i for compress: $e');
+          results.add((null, Size.zero));
+        }
+      }
+
+      await document.close();
+      return results;
+    } on Exception catch (e, st) {
+      log.e('Failed to render pages for compress', error: e, stackTrace: st);
       return [];
     }
   }
