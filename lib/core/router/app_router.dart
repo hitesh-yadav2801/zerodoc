@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:zerodoc/core/constants/tool_routes.dart';
 import 'package:zerodoc/core/router/app_shell.dart';
 import 'package:zerodoc/features/home/presentation/pages/home_page.dart';
 import 'package:zerodoc/features/result/presentation/pages/result_page.dart';
 import 'package:zerodoc/features/settings/presentation/pages/settings_page.dart';
 import 'package:zerodoc/features/splash/presentation/pages/splash_page.dart';
+import 'package:zerodoc/features/tools/merge/presentation/merge_page.dart';
 import 'package:zerodoc/features/tools/presentation/pages/placeholder_tool_page.dart';
 import 'package:zerodoc/features/tools/presentation/pages/tools_page.dart';
 import 'package:zerodoc/features/workbench/presentation/pages/workbench_page.dart';
@@ -12,6 +14,13 @@ import 'package:zerodoc/features/workbench/presentation/pages/workbench_page.dar
 abstract final class AppRouter {
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
   static final _shellNavigatorKey = GlobalKey<NavigatorState>();
+
+  static Widget _resolveToolPage(String toolId) {
+    return switch (toolId) {
+      ToolRoutes.merge => const MergePage(),
+      _ => PlaceholderToolPage(toolId: toolId),
+    };
+  }
 
   static final router = GoRouter(
     navigatorKey: _rootNavigatorKey,
@@ -56,9 +65,7 @@ abstract final class AppRouter {
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: (context, state) {
           final toolId = state.pathParameters['toolId']!;
-          return MaterialPage(
-            child: PlaceholderToolPage(toolId: toolId),
-          );
+          return MaterialPage(child: _resolveToolPage(toolId));
         },
       ),
       ShellRoute(

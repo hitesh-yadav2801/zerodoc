@@ -88,6 +88,28 @@ class PdfEditService {
     return bytes;
   }
 
+  Future<Uint8List> mergeFiles(List<Uint8List> pdfBytesList) async {
+    final result = PdfDocument();
+
+    for (final pdfBytes in pdfBytesList) {
+      final source = PdfDocument(inputBytes: pdfBytes);
+      for (var i = 0; i < source.pages.count; i++) {
+        final template = source.pages[i].createTemplate();
+        final sourceSize = source.pages[i].size;
+        result.pageSettings
+          ..size = sourceSize
+          ..margins.all = 0;
+        final newPage = result.pages.add();
+        newPage.graphics.drawPdfTemplate(template, Offset.zero, sourceSize);
+      }
+      source.dispose();
+    }
+
+    final bytes = Uint8List.fromList(await result.save());
+    result.dispose();
+    return bytes;
+  }
+
   Future<int> getPageCount(Uint8List pdfBytes) async {
     try {
       final doc = PdfDocument(inputBytes: pdfBytes);
