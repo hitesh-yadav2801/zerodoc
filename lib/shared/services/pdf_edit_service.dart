@@ -183,6 +183,24 @@ class PdfEditService {
     return bytes;
   }
 
+  /// Strips metadata fields from a PDF document.
+  Future<Uint8List> sanitizeMetadata(Uint8List pdfBytes) async {
+    final doc = PdfDocument(inputBytes: pdfBytes);
+    doc.documentInformation
+      ..title = ''
+      ..author = ''
+      ..subject = ''
+      ..keywords = ''
+      ..creator = ''
+      ..producer = ''
+      ..modificationDate = DateTime(1970)
+      ..creationDate = DateTime(1970);
+
+    final bytes = Uint8List.fromList(await doc.save());
+    doc.dispose();
+    return bytes;
+  }
+
   Future<int> getPageCount(Uint8List pdfBytes) async {
     try {
       final doc = PdfDocument(inputBytes: pdfBytes);

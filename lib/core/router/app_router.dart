@@ -14,6 +14,7 @@ import 'package:zerodoc/features/tools/pdf_to_img/presentation/pdf_to_img_page.d
 import 'package:zerodoc/features/tools/presentation/pages/placeholder_tool_page.dart';
 import 'package:zerodoc/features/tools/presentation/pages/tools_page.dart';
 import 'package:zerodoc/features/tools/rotate/presentation/rotate_page.dart';
+import 'package:zerodoc/features/tools/sanitize/presentation/sanitize_page.dart';
 import 'package:zerodoc/features/tools/split/presentation/split_page.dart';
 import 'package:zerodoc/features/tools/unlock/presentation/unlock_page.dart';
 import 'package:zerodoc/features/workbench/presentation/pages/workbench_page.dart';
@@ -32,6 +33,7 @@ abstract final class AppRouter {
       ToolRoutes.pdfToImg => const PdfToImgPage(),
       ToolRoutes.encrypt => const EncryptPage(),
       ToolRoutes.unlock => const UnlockPage(),
+      ToolRoutes.sanitize => const SanitizePage(),
       _ => PlaceholderToolPage(toolId: toolId),
     };
   }
