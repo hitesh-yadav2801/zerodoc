@@ -152,6 +152,23 @@ class PdfEditService {
     return bytes;
   }
 
+  /// Encrypts a PDF with AES-256 using the given password.
+  Future<Uint8List> encryptPdf(
+    Uint8List pdfBytes,
+    String userPassword, {
+    String? ownerPassword,
+  }) async {
+    final doc = PdfDocument(inputBytes: pdfBytes);
+    doc.security
+      ..algorithm = PdfEncryptionAlgorithm.aesx256Bit
+      ..userPassword = userPassword
+      ..ownerPassword = ownerPassword ?? userPassword;
+
+    final bytes = Uint8List.fromList(await doc.save());
+    doc.dispose();
+    return bytes;
+  }
+
   Future<int> getPageCount(Uint8List pdfBytes) async {
     try {
       final doc = PdfDocument(inputBytes: pdfBytes);

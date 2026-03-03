@@ -7,6 +7,7 @@ import 'package:zerodoc/features/result/presentation/pages/result_page.dart';
 import 'package:zerodoc/features/settings/presentation/pages/settings_page.dart';
 import 'package:zerodoc/features/splash/presentation/pages/splash_page.dart';
 import 'package:zerodoc/features/tools/compress/presentation/compress_page.dart';
+import 'package:zerodoc/features/tools/encrypt/presentation/encrypt_page.dart';
 import 'package:zerodoc/features/tools/img_to_pdf/presentation/img_to_pdf_page.dart';
 import 'package:zerodoc/features/tools/merge/presentation/merge_page.dart';
 import 'package:zerodoc/features/tools/pdf_to_img/presentation/pdf_to_img_page.dart';
@@ -28,6 +29,7 @@ abstract final class AppRouter {
       ToolRoutes.compress => const CompressPage(),
       ToolRoutes.imgToPdf => const ImgToPdfPage(),
       ToolRoutes.pdfToImg => const PdfToImgPage(),
+      ToolRoutes.encrypt => const EncryptPage(),
       _ => PlaceholderToolPage(toolId: toolId),
     };
   }
