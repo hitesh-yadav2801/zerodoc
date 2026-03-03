@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:zerodoc/core/errors/failure.dart';
 import 'package:zerodoc/features/home/presentation/providers/desk_provider.dart';
 import 'package:zerodoc/features/workbench/domain/entities/page_state.dart';
@@ -41,19 +42,22 @@ class WorkbenchState {
   }
 }
 
-final workbenchProvider = AsyncNotifierProvider.family<
-    WorkbenchNotifier, WorkbenchState, ({String filePath, String fileName})>(
+final AsyncNotifierProviderFamily<WorkbenchNotifier, WorkbenchState,
+        ({String filePath, String fileName})> workbenchProvider =
+    AsyncNotifierProvider.family<WorkbenchNotifier, WorkbenchState,
+        ({String filePath, String fileName})>(
   WorkbenchNotifier.new,
 );
 
-class WorkbenchNotifier extends FamilyAsyncNotifier<WorkbenchState,
-    ({String filePath, String fileName})> {
+class WorkbenchNotifier extends AsyncNotifier<WorkbenchState> {
+  WorkbenchNotifier(this._arg);
+
+  final ({String filePath, String fileName}) _arg;
+
   @override
-  Future<WorkbenchState> build(
-    ({String filePath, String fileName}) arg,
-  ) async {
+  Future<WorkbenchState> build() async {
     final pdfService = ref.read(pdfServiceProvider);
-    final thumbnails = await pdfService.renderAllPages(arg.filePath);
+    final thumbnails = await pdfService.renderAllPages(_arg.filePath);
 
     final pages = List.generate(
       thumbnails.length,
@@ -61,14 +65,14 @@ class WorkbenchNotifier extends FamilyAsyncNotifier<WorkbenchState,
     );
 
     return WorkbenchState(
-      filePath: arg.filePath,
-      fileName: arg.fileName,
+      filePath: _arg.filePath,
+      fileName: _arg.fileName,
       pages: pages,
     );
   }
 
   void toggleSelection(int index) {
-    final current = state.valueOrNull;
+    final current = state.value;
     if (current == null) return;
 
     final updatedPages = List<PageState>.from(current.pages);
@@ -79,7 +83,7 @@ class WorkbenchNotifier extends FamilyAsyncNotifier<WorkbenchState,
   }
 
   void selectAll() {
-    final current = state.valueOrNull;
+    final current = state.value;
     if (current == null) return;
 
     state = AsyncData(
@@ -90,7 +94,7 @@ class WorkbenchNotifier extends FamilyAsyncNotifier<WorkbenchState,
   }
 
   void deselectAll() {
-    final current = state.valueOrNull;
+    final current = state.value;
     if (current == null) return;
 
     state = AsyncData(
@@ -102,7 +106,7 @@ class WorkbenchNotifier extends FamilyAsyncNotifier<WorkbenchState,
   }
 
   Future<void> rotateSelected(int degrees) async {
-    final current = state.valueOrNull;
+    final current = state.value;
     if (current == null) return;
 
     final pdfService = ref.read(pdfServiceProvider);
@@ -123,7 +127,7 @@ class WorkbenchNotifier extends FamilyAsyncNotifier<WorkbenchState,
   }
 
   void deleteSelected() {
-    final current = state.valueOrNull;
+    final current = state.value;
     if (current == null) return;
 
     final remaining = current.pages.where((p) => !p.isSelected).toList();
@@ -133,7 +137,7 @@ class WorkbenchNotifier extends FamilyAsyncNotifier<WorkbenchState,
   }
 
   void reorder(int oldIndex, int newIndex) {
-    final current = state.valueOrNull;
+    final current = state.value;
     if (current == null) return;
 
     final pages = List<PageState>.from(current.pages);
@@ -146,7 +150,7 @@ class WorkbenchNotifier extends FamilyAsyncNotifier<WorkbenchState,
   }
 
   void toggleReorderMode() {
-    final current = state.valueOrNull;
+    final current = state.value;
     if (current == null) return;
 
     final entering = !current.isReorderMode;
@@ -161,7 +165,7 @@ class WorkbenchNotifier extends FamilyAsyncNotifier<WorkbenchState,
   }
 
   void rename(String newName) {
-    final current = state.valueOrNull;
+    final current = state.value;
     if (current == null) return;
 
     final sanitized = newName.trim();
@@ -173,7 +177,7 @@ class WorkbenchNotifier extends FamilyAsyncNotifier<WorkbenchState,
 
   /// Returns `(null, outputPath)` on success, or `(failure, null)` on error.
   Future<(Failure?, String?)> saveAsNewCopy() async {
-    final current = state.valueOrNull;
+    final current = state.value;
     if (current == null) return (const Failure('No data to save.'), null);
 
     try {
@@ -197,7 +201,7 @@ class WorkbenchNotifier extends FamilyAsyncNotifier<WorkbenchState,
 
   /// Returns `(null, outputPath)` on success, or `(failure, null)` on error.
   Future<(Failure?, String?)> extractSelected() async {
-    final current = state.valueOrNull;
+    final current = state.value;
     if (current == null) return (const Failure('No data.'), null);
 
     final selected = current.pages.where((p) => p.isSelected).toList();

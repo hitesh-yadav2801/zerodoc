@@ -46,7 +46,9 @@ class ResultPage extends StatelessWidget {
 
   Future<void> _onShare(BuildContext context) async {
     try {
-      await Share.shareXFiles([XFile(outputPath)]);
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(outputPath)]),
+      );
     } on Exception catch (e) {
       log.e('Share failed', error: e);
       if (context.mounted) {

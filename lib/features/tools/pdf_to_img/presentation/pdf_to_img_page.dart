@@ -103,7 +103,9 @@ class _PdfToImgPageState extends ConsumerState<PdfToImgPage> {
         return;
       }
 
-      await Share.shareXFiles(xFiles, text: 'Pages from $_fileName');
+      await SharePlus.instance.share(
+        ShareParams(files: xFiles, text: 'Pages from $_fileName'),
+      );
 
       if (mounted) {
         AppSnackBar.show(
