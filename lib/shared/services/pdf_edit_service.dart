@@ -169,6 +169,20 @@ class PdfEditService {
     return bytes;
   }
 
+  /// Unlocks a password-protected PDF by opening with the password
+  /// and saving without encryption.
+  Future<Uint8List> unlockPdf(Uint8List pdfBytes, String password) async {
+    final doc = PdfDocument(inputBytes: pdfBytes, password: password);
+
+    doc.security
+      ..userPassword = ''
+      ..ownerPassword = '';
+
+    final bytes = Uint8List.fromList(await doc.save());
+    doc.dispose();
+    return bytes;
+  }
+
   Future<int> getPageCount(Uint8List pdfBytes) async {
     try {
       final doc = PdfDocument(inputBytes: pdfBytes);

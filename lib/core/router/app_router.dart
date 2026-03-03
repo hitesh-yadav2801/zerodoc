@@ -15,6 +15,7 @@ import 'package:zerodoc/features/tools/presentation/pages/placeholder_tool_page.
 import 'package:zerodoc/features/tools/presentation/pages/tools_page.dart';
 import 'package:zerodoc/features/tools/rotate/presentation/rotate_page.dart';
 import 'package:zerodoc/features/tools/split/presentation/split_page.dart';
+import 'package:zerodoc/features/tools/unlock/presentation/unlock_page.dart';
 import 'package:zerodoc/features/workbench/presentation/pages/workbench_page.dart';
 
 abstract final class AppRouter {
@@ -30,6 +31,7 @@ abstract final class AppRouter {
       ToolRoutes.imgToPdf => const ImgToPdfPage(),
       ToolRoutes.pdfToImg => const PdfToImgPage(),
       ToolRoutes.encrypt => const EncryptPage(),
+      ToolRoutes.unlock => const UnlockPage(),
       _ => PlaceholderToolPage(toolId: toolId),
     };
   }
