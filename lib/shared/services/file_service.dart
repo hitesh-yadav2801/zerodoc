@@ -25,6 +25,25 @@ class FileService {
     }
   }
 
+  Future<List<File>> pickImages() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+        allowMultiple: true,
+      );
+
+      if (result == null || result.files.isEmpty) return [];
+
+      return result.files
+          .where((f) => f.path != null)
+          .map((f) => File(f.path!))
+          .toList();
+    } on Exception catch (e, st) {
+      log.e('Failed to pick images', error: e, stackTrace: st);
+      return [];
+    }
+  }
+
   Future<File> copyToLocal(File source) async {
     final appDir = await getApplicationDocumentsDirectory();
     final fileName = source.uri.pathSegments.last;

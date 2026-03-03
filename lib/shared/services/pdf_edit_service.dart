@@ -110,6 +110,25 @@ class PdfEditService {
     return bytes;
   }
 
+  /// Creates a PDF from a list of image file bytes.
+  Future<Uint8List> imagesToPdf(List<Uint8List> imageBytesList) async {
+    final result = PdfDocument();
+
+    for (final imageBytes in imageBytesList) {
+      final image = PdfBitmap(imageBytes);
+      final pageSize = Size(image.width.toDouble(), image.height.toDouble());
+      result.pageSettings
+        ..size = pageSize
+        ..margins.all = 0;
+      final page = result.pages.add();
+      page.graphics.drawImage(image, Offset.zero & pageSize);
+    }
+
+    final bytes = Uint8List.fromList(await result.save());
+    result.dispose();
+    return bytes;
+  }
+
   /// Creates a new PDF where each page is a rasterized JPEG image.
   Future<Uint8List> compressViaRasterize(
     String filePath,
