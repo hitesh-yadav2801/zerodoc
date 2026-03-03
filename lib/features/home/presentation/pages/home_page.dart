@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:zerodoc/core/constants/app_spacing.dart';
 import 'package:zerodoc/core/constants/app_strings.dart';
 import 'package:zerodoc/core/theme/app_colors.dart';
@@ -63,7 +64,13 @@ class HomePage extends ConsumerWidget {
                 ? _buildEmpty()
                 : DeskFileList(
                     files: files,
-                    onFileTap: (_) {},
+                    onFileTap: (file) => context.push(
+                      '/workbench',
+                      extra: {
+                        'filePath': file.path,
+                        'fileName': file.name,
+                      },
+                    ),
                     onFileDismissed: (file) =>
                         _onFileDismissed(context, ref, file),
                   ),

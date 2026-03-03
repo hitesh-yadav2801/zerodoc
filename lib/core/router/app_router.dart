@@ -5,6 +5,7 @@ import 'package:zerodoc/features/home/presentation/pages/home_page.dart';
 import 'package:zerodoc/features/settings/presentation/pages/settings_page.dart';
 import 'package:zerodoc/features/splash/presentation/pages/splash_page.dart';
 import 'package:zerodoc/features/tools/presentation/pages/tools_page.dart';
+import 'package:zerodoc/features/workbench/presentation/pages/workbench_page.dart';
 
 abstract final class AppRouter {
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -19,6 +20,19 @@ abstract final class AppRouter {
         pageBuilder: (context, state) => const NoTransitionPage(
           child: SplashPage(),
         ),
+      ),
+      GoRoute(
+        path: '/workbench',
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) {
+          final extra = state.extra! as Map<String, String>;
+          return MaterialPage(
+            child: WorkbenchPage(
+              filePath: extra['filePath']!,
+              fileName: extra['fileName']!,
+            ),
+          );
+        },
       ),
       ShellRoute(
         navigatorKey: _shellNavigatorKey,

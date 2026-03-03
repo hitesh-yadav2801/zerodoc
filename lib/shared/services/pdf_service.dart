@@ -38,4 +38,36 @@ class PdfService {
       return null;
     }
   }
+
+  Future<List<Uint8List?>> renderAllPages(
+    String filePath, {
+    double width = 200,
+  }) async {
+    try {
+      final document = await PdfDocument.openFile(filePath);
+      final thumbnails = <Uint8List?>[];
+
+      for (var i = 1; i <= document.pagesCount; i++) {
+        try {
+          final page = await document.getPage(i);
+          final pageImage = await page.render(
+            width: width,
+            height: width * (page.height / page.width),
+            format: PdfPageImageFormat.png,
+          );
+          await page.close();
+          thumbnails.add(pageImage?.bytes);
+        } on Exception catch (e) {
+          log.w('Failed to render page $i: $e');
+          thumbnails.add(null);
+        }
+      }
+
+      await document.close();
+      return thumbnails;
+    } on Exception catch (e, st) {
+      log.e('Failed to render all pages', error: e, stackTrace: st);
+      return [];
+    }
+  }
 }

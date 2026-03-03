@@ -81,4 +81,16 @@ class DeskNotifier extends AsyncNotifier<List<DeskFile>> {
       },
     );
   }
+
+  Future<Failure?> addFileDirectly(File file) async {
+    final result = await _repository.addFile(file);
+    return result.fold(
+      (failure) => failure,
+      (deskFile) {
+        final current = state.valueOrNull ?? [];
+        state = AsyncData([deskFile, ...current]);
+        return null;
+      },
+    );
+  }
 }
