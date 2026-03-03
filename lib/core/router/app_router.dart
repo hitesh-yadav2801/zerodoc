@@ -9,6 +9,7 @@ import 'package:zerodoc/features/splash/presentation/pages/splash_page.dart';
 import 'package:zerodoc/features/tools/merge/presentation/merge_page.dart';
 import 'package:zerodoc/features/tools/presentation/pages/placeholder_tool_page.dart';
 import 'package:zerodoc/features/tools/presentation/pages/tools_page.dart';
+import 'package:zerodoc/features/tools/split/presentation/split_page.dart';
 import 'package:zerodoc/features/workbench/presentation/pages/workbench_page.dart';
 
 abstract final class AppRouter {
@@ -18,6 +19,7 @@ abstract final class AppRouter {
   static Widget _resolveToolPage(String toolId) {
     return switch (toolId) {
       ToolRoutes.merge => const MergePage(),
+      ToolRoutes.split => const SplitPage(),
       _ => PlaceholderToolPage(toolId: toolId),
     };
   }
