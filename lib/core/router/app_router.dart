@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:zerodoc/core/router/app_shell.dart';
 import 'package:zerodoc/features/home/presentation/pages/home_page.dart';
+import 'package:zerodoc/features/result/presentation/pages/result_page.dart';
 import 'package:zerodoc/features/settings/presentation/pages/settings_page.dart';
 import 'package:zerodoc/features/splash/presentation/pages/splash_page.dart';
 import 'package:zerodoc/features/tools/presentation/pages/tools_page.dart';
@@ -30,6 +31,21 @@ abstract final class AppRouter {
             child: WorkbenchPage(
               filePath: extra['filePath']!,
               fileName: extra['fileName']!,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/result',
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) {
+          final extra = state.extra! as Map<String, dynamic>;
+          return MaterialPage(
+            child: ResultPage(
+              outputPath: extra['outputPath']! as String,
+              fileName: extra['fileName']! as String,
+              showOpenInWorkbench:
+                  extra['showOpenInWorkbench'] as bool? ?? false,
             ),
           );
         },

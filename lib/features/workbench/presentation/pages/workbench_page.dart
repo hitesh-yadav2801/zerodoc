@@ -268,33 +268,35 @@ class WorkbenchPage extends ConsumerWidget {
   }
 
   Future<void> _onSaveCopy(BuildContext context, WidgetRef ref) async {
-    final failure =
+    final (failure, outputPath) =
         await ref.read(workbenchProvider(_arg).notifier).saveAsNewCopy();
     if (!context.mounted) return;
     if (failure != null) {
       AppSnackBar.show(context, message: failure.message, isError: true);
     } else {
-      AppSnackBar.show(
-        context,
-        message: 'Saved as new copy',
-        isSuccess: true,
-      );
+      final wb = ref.read(workbenchProvider(_arg)).valueOrNull;
+      await context.push('/result', extra: {
+        'outputPath': outputPath,
+        'fileName': wb?.fileName ?? fileName,
+        'showOpenInWorkbench': true,
+      });
     }
   }
 
   Future<void> _onExtract(BuildContext context, WidgetRef ref) async {
-    final failure =
+    final (failure, outputPath) =
         await ref.read(workbenchProvider(_arg).notifier).extractSelected();
     if (!context.mounted) return;
     if (failure != null) {
       AppSnackBar.show(context, message: failure.message, isError: true);
     } else {
-      AppSnackBar.show(
-        context,
-        message: 'Pages extracted',
-        isSuccess: true,
-      );
       ref.read(workbenchProvider(_arg).notifier).deselectAll();
+      final baseName = fileName.replaceAll(RegExp(r'\.pdf$'), '');
+      await context.push('/result', extra: {
+        'outputPath': outputPath,
+        'fileName': '${baseName}_extract.pdf',
+        'showOpenInWorkbench': true,
+      });
     }
   }
 

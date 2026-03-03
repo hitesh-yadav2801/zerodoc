@@ -171,9 +171,10 @@ class WorkbenchNotifier extends FamilyAsyncNotifier<WorkbenchState,
     state = AsyncData(current.copyWith(fileName: name));
   }
 
-  Future<Failure?> saveAsNewCopy() async {
+  /// Returns `(null, outputPath)` on success, or `(failure, null)` on error.
+  Future<(Failure?, String?)> saveAsNewCopy() async {
     final current = state.valueOrNull;
-    if (current == null) return const Failure('No data to save.');
+    if (current == null) return (const Failure('No data to save.'), null);
 
     try {
       final pdfEditService = ref.read(pdfEditServiceProvider);
@@ -188,18 +189,19 @@ class WorkbenchNotifier extends FamilyAsyncNotifier<WorkbenchState,
 
       await ref.read(deskProvider.notifier).addFileDirectly(tempFile);
 
-      return null;
+      return (null, tempFile.path);
     } on Exception catch (e) {
-      return Failure('Failed to save: $e');
+      return (Failure('Failed to save: $e'), null);
     }
   }
 
-  Future<Failure?> extractSelected() async {
+  /// Returns `(null, outputPath)` on success, or `(failure, null)` on error.
+  Future<(Failure?, String?)> extractSelected() async {
     final current = state.valueOrNull;
-    if (current == null) return const Failure('No data.');
+    if (current == null) return (const Failure('No data.'), null);
 
     final selected = current.pages.where((p) => p.isSelected).toList();
-    if (selected.isEmpty) return const Failure('No pages selected.');
+    if (selected.isEmpty) return (const Failure('No pages selected.'), null);
 
     try {
       final pdfEditService = ref.read(pdfEditServiceProvider);
@@ -218,9 +220,9 @@ class WorkbenchNotifier extends FamilyAsyncNotifier<WorkbenchState,
 
       await ref.read(deskProvider.notifier).addFileDirectly(tempFile);
 
-      return null;
+      return (null, tempFile.path);
     } on Exception catch (e) {
-      return Failure('Failed to extract: $e');
+      return (Failure('Failed to extract: $e'), null);
     }
   }
 }
