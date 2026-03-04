@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -27,21 +29,29 @@ class HomePage extends ConsumerWidget {
     }
   }
 
-  void _onFileDismissed(
+  void _onFileDelete(
     BuildContext context,
     WidgetRef ref,
     DeskFile file,
   ) {
-    ref.read(deskProvider.notifier).removeFile(file.id).then(
-      (removed) {
-        if (removed != null && context.mounted) {
-          AppSnackBar.show(
-            context,
-            message: 'Removed ${removed.name}',
-            actionLabel: 'Undo',
-            onAction: () {
-              ref.read(deskProvider.notifier).undoRemove(removed);
-            },
+    final removed = ref.read(deskProvider.notifier).softRemoveFile(file.id);
+    if (removed == null) return;
+
+    var undone = false;
+
+    AppSnackBar.show(
+      context,
+      message: 'Removed ${removed.name}',
+      actionLabel: 'Undo',
+      duration: const Duration(seconds: 5),
+      onAction: () {
+        undone = true;
+        ref.read(deskProvider.notifier).undoSoftRemove(removed);
+      },
+      onDismissed: () {
+        if (!undone) {
+          unawaited(
+            ref.read(deskProvider.notifier).confirmRemoveFile(removed.id),
           );
         }
       },
@@ -72,8 +82,8 @@ class HomePage extends ConsumerWidget {
                         'fileName': file.name,
                       },
                     ),
-                    onFileDismissed: (file) =>
-                        _onFileDismissed(context, ref, file),
+                    onFileDelete: (file) =>
+                        _onFileDelete(context, ref, file),
                   ),
           ),
         ],

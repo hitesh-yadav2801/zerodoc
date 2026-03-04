@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:zerodoc/core/constants/app_durations.dart';
@@ -13,8 +15,6 @@ class FileCard extends StatefulWidget {
     this.pageCount,
     this.fileSize,
     this.subtitle,
-    this.onDismissed,
-    this.dismissKey,
     super.key,
   });
 
@@ -23,8 +23,6 @@ class FileCard extends StatefulWidget {
   final String? fileSize;
   final String? subtitle;
   final VoidCallback onTap;
-  final VoidCallback? onDismissed;
-  final String? dismissKey;
 
   @override
   State<FileCard> createState() => _FileCardState();
@@ -43,12 +41,14 @@ class _FileCardState extends State<FileCard> {
     return parts.join(' · ');
   }
 
-  Widget _buildCard(AppColorsResolved c) {
+  @override
+  Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return GestureDetector(
       onTapDown: (_) => setState(() => _pressed = true),
       onTapUp: (_) {
         setState(() => _pressed = false);
-        HapticFeedback.lightImpact();
+        unawaited(HapticFeedback.lightImpact());
         widget.onTap();
       },
       onTapCancel: () => setState(() => _pressed = false),
@@ -105,31 +105,6 @@ class _FileCardState extends State<FileCard> {
           ),
         ),
       ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final c = AppColors.of(context);
-    if (widget.onDismissed == null) return _buildCard(c);
-
-    return Dismissible(
-      key: ValueKey(widget.dismissKey ?? widget.fileName),
-      direction: DismissDirection.endToStart,
-      onDismissed: (_) {
-        HapticFeedback.heavyImpact();
-        widget.onDismissed?.call();
-      },
-      background: Container(
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 24),
-        decoration: BoxDecoration(
-          color: c.terracotta,
-          borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-        ),
-        child: const Icon(Icons.delete_rounded, color: Colors.white),
-      ),
-      child: _buildCard(c),
     );
   }
 }
