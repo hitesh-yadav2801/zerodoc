@@ -27,10 +27,10 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final c = AppColors.of(context);
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkPaperBg : AppColors.paperBg,
+      backgroundColor: c.paperBg,
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -38,14 +38,14 @@ class _SplashPageState extends State<SplashPage> {
             Text(
               AppStrings.appName,
               style: AppTypography.pageTitle(
-                color: isDark ? AppColors.darkSlate : AppColors.slate,
+                color: c.slate,
               ).copyWith(fontSize: 40),
             ),
             const SizedBox(height: 8),
             Text(
               AppStrings.slogan,
               style: AppTypography.label(
-                color: isDark ? AppColors.darkInkMuted : AppColors.inkMuted,
+                color: c.inkMuted,
               ),
             ),
           ],

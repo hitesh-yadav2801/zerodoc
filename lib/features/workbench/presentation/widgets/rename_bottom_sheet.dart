@@ -39,6 +39,7 @@ class _RenameBottomSheetState extends State<RenameBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return Padding(
       padding: EdgeInsets.only(
         left: AppSpacing.xl,
@@ -53,13 +54,13 @@ class _RenameBottomSheetState extends State<RenameBottomSheet> {
           const SizedBox(height: AppSpacing.xl),
           Text(
             'Rename',
-            style: AppTypography.sectionHeader(color: AppColors.ink),
+            style: AppTypography.sectionHeader(color: c.ink),
           ),
           const SizedBox(height: AppSpacing.lg),
           TextField(
             controller: _controller,
             autofocus: true,
-            style: AppTypography.body(color: AppColors.ink),
+            style: AppTypography.body(color: c.ink),
             decoration: const InputDecoration(
               hintText: 'File name',
               suffixText: '.pdf',

@@ -28,6 +28,7 @@ class _ToolCardState extends State<ToolCard> {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return GestureDetector(
       onTapDown: (_) => setState(() => _pressed = true),
       onTapUp: (_) {
@@ -43,9 +44,9 @@ class _ToolCardState extends State<ToolCard> {
           aspectRatio: 1,
           child: Container(
             decoration: BoxDecoration(
-              color: AppColors.toolCardBg,
+              color: c.toolCardBg,
               borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-              boxShadow: AppShadows.sm,
+              boxShadow: AppShadows.sm(context),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -53,12 +54,12 @@ class _ToolCardState extends State<ToolCard> {
                 Icon(
                   widget.icon,
                   size: AppSpacing.iconLg,
-                  color: widget.iconColor ?? AppColors.slate,
+                  color: widget.iconColor ?? c.slate,
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   widget.label,
-                  style: AppTypography.chip(color: AppColors.ink),
+                  style: AppTypography.chip(color: c.ink),
                   textAlign: TextAlign.center,
                 ),
               ],

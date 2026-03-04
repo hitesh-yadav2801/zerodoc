@@ -17,13 +17,14 @@ class ErrorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 32),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       decoration: BoxDecoration(
-        color: AppColors.paperCard,
+        color: c.paperCard,
         borderRadius: BorderRadius.circular(24),
-        boxShadow: AppShadows.md,
+        boxShadow: AppShadows.md(context),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -31,8 +32,8 @@ class ErrorCard extends StatelessWidget {
           Container(
             width: 48,
             height: 48,
-            decoration: const BoxDecoration(
-              color: AppColors.terracotta,
+            decoration: BoxDecoration(
+              color: c.terracotta,
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -44,12 +45,12 @@ class ErrorCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.lg),
           Text(
             'Something went wrong',
-            style: AppTypography.sectionHeader(color: AppColors.ink),
+            style: AppTypography.sectionHeader(color: c.ink),
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
             message,
-            style: AppTypography.label(color: AppColors.inkMuted),
+            style: AppTypography.label(color: c.inkMuted),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: AppSpacing.xxl),

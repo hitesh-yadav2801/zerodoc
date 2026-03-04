@@ -14,32 +14,33 @@ class ProgressOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return ColoredBox(
-      color: AppColors.paperBg,
+      color: c.paperBg,
       child: Center(
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 32),
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
           decoration: BoxDecoration(
-            color: AppColors.paperCard,
+            color: c.paperCard,
             borderRadius: BorderRadius.circular(24),
-            boxShadow: AppShadows.md,
+            boxShadow: AppShadows.md(context),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(
+              SizedBox(
                 width: 48,
                 height: 48,
                 child: CircularProgressIndicator(
                   strokeWidth: 3,
-                  color: AppColors.slate,
+                  color: c.slate,
                 ),
               ),
               const SizedBox(height: AppSpacing.xl),
               Text(
                 message,
-                style: AppTypography.body(color: AppColors.inkMuted),
+                style: AppTypography.body(color: c.inkMuted),
                 textAlign: TextAlign.center,
               ),
             ],

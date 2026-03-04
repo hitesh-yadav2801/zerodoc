@@ -12,6 +12,7 @@ class PlaceholderToolPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return ToolScreenShell(
       title: ToolRoutes.displayName(toolId),
       fileSection: const FileDropZone(onTap: _noop),
@@ -20,7 +21,7 @@ class PlaceholderToolPage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 48),
           child: Text(
             'Coming soon',
-            style: AppTypography.body(color: AppColors.inkMuted),
+            style: AppTypography.body(color: c.inkMuted),
           ),
         ),
       ),

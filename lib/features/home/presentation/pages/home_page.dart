@@ -50,18 +50,19 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final c = AppColors.of(context);
     final deskState = ref.watch(deskProvider);
 
     return SafeArea(
       child: CustomScrollView(
         slivers: [
-          _buildHeader(context, ref),
-          _buildSectionTitle(),
+          _buildHeader(context, ref, c),
+          _buildSectionTitle(c),
           deskState.when(
-            loading: _buildLoading,
-            error: (error, _) => _buildError(context, ref, error),
+            loading: () => _buildLoading(c),
+            error: (error, _) => _buildError(context, ref, error, c),
             data: (files) => files.isEmpty
-                ? _buildEmpty()
+                ? _buildEmpty(c)
                 : DeskFileList(
                     files: files,
                     onFileTap: (file) => context.push(
@@ -80,7 +81,7 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, WidgetRef ref) {
+  Widget _buildHeader(BuildContext context, WidgetRef ref, AppColorsResolved c) {
     return SliverPadding(
       padding: AppSpacing.pagePadding.copyWith(top: 24, bottom: 8),
       sliver: SliverToBoxAdapter(
@@ -92,12 +93,12 @@ class HomePage extends ConsumerWidget {
               children: [
                 Text(
                   _greeting,
-                  style: AppTypography.pageTitle(color: AppColors.ink),
+                  style: AppTypography.pageTitle(color: c.ink),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   AppStrings.slogan,
-                  style: AppTypography.caption(color: AppColors.inkMuted),
+                  style: AppTypography.caption(color: c.inkMuted),
                 ),
               ],
             ),
@@ -112,28 +113,28 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionTitle() {
+  Widget _buildSectionTitle(AppColorsResolved c) {
     return SliverPadding(
       padding: AppSpacing.pagePadding.copyWith(top: 24),
       sliver: SliverToBoxAdapter(
         child: Text(
           'On the Desk',
-          style: AppTypography.sectionHeader(color: AppColors.ink),
+          style: AppTypography.sectionHeader(color: c.ink),
         ),
       ),
     );
   }
 
-  Widget _buildLoading() {
-    return const SliverFillRemaining(
+  Widget _buildLoading(AppColorsResolved c) {
+    return SliverFillRemaining(
       hasScrollBody: false,
       child: Center(
-        child: CircularProgressIndicator(color: AppColors.slate),
+        child: CircularProgressIndicator(color: c.slate),
       ),
     );
   }
 
-  Widget _buildError(BuildContext context, WidgetRef ref, Object error) {
+  Widget _buildError(BuildContext context, WidgetRef ref, Object error, AppColorsResolved c) {
     return SliverFillRemaining(
       hasScrollBody: false,
       child: Center(
@@ -145,19 +146,19 @@ class HomePage extends ConsumerWidget {
               Icon(
                 Icons.error_outline_rounded,
                 size: 48,
-                color: AppColors.terracotta.withValues(alpha: 0.6),
+                color: c.terracotta.withValues(alpha: 0.6),
               ),
               const SizedBox(height: AppSpacing.lg),
               Text(
                 'Could not load your files.',
-                style: AppTypography.body(color: AppColors.inkMuted),
+                style: AppTypography.body(color: c.inkMuted),
               ),
               const SizedBox(height: AppSpacing.lg),
               TextButton(
                 onPressed: () => ref.invalidate(deskProvider),
                 child: Text(
                   'Retry',
-                  style: AppTypography.label(color: AppColors.slate),
+                  style: AppTypography.label(color: c.slate),
                 ),
               ),
             ],
@@ -167,7 +168,7 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmpty() {
+  Widget _buildEmpty(AppColorsResolved c) {
     return SliverFillRemaining(
       hasScrollBody: false,
       child: Center(
@@ -179,17 +180,17 @@ class HomePage extends ConsumerWidget {
               Icon(
                 Icons.description_outlined,
                 size: 64,
-                color: AppColors.inkMuted.withValues(alpha: 0.4),
+                color: c.inkMuted.withValues(alpha: 0.4),
               ),
               const SizedBox(height: AppSpacing.lg),
               Text(
                 'Nothing on the desk yet.',
-                style: AppTypography.body(color: AppColors.inkMuted),
+                style: AppTypography.body(color: c.inkMuted),
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(
                 'Tap + to import a document.',
-                style: AppTypography.caption(color: AppColors.inkMuted),
+                style: AppTypography.caption(color: c.inkMuted),
               ),
             ],
           ),

@@ -151,10 +151,11 @@ class _CompressPageState extends ConsumerState<CompressPage> {
   }
 
   Widget _buildOptions() {
+    final c = AppColors.of(context);
     return Container(
       padding: AppSpacing.cardPadding,
       decoration: BoxDecoration(
-        color: AppColors.paperCard,
+        color: c.paperCard,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
       ),
       child: Column(
@@ -162,7 +163,7 @@ class _CompressPageState extends ConsumerState<CompressPage> {
         children: [
           Text(
             'Compression Level',
-            style: AppTypography.label(color: AppColors.ink),
+            style: AppTypography.label(color: c.ink),
           ),
           const SizedBox(height: 12),
           SegmentedButton<CompressionLevel>(
@@ -186,12 +187,12 @@ class _CompressPageState extends ConsumerState<CompressPage> {
               foregroundColor: WidgetStateProperty.resolveWith(
                 (states) => states.contains(WidgetState.selected)
                     ? Colors.white
-                    : AppColors.ink,
+                    : c.ink,
               ),
               backgroundColor: WidgetStateProperty.resolveWith(
                 (states) => states.contains(WidgetState.selected)
-                    ? AppColors.slate
-                    : AppColors.paperCard,
+                    ? c.slate
+                    : c.paperCard,
               ),
             ),
           ),
@@ -200,7 +201,7 @@ class _CompressPageState extends ConsumerState<CompressPage> {
               padding: const EdgeInsets.only(top: 12),
               child: Text(
                 'Original size: ${FileService.formatFileSize(_sizeBytes!)}',
-                style: AppTypography.caption(color: AppColors.inkMuted),
+                style: AppTypography.caption(color: c.inkMuted),
               ),
             ),
         ],

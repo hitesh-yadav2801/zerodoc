@@ -22,13 +22,14 @@ class SuccessCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 32),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       decoration: BoxDecoration(
-        color: AppColors.paperCard,
+        color: c.paperCard,
         borderRadius: BorderRadius.circular(24),
-        boxShadow: AppShadows.md,
+        boxShadow: AppShadows.md(context),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -36,8 +37,8 @@ class SuccessCard extends StatelessWidget {
           Container(
             width: 48,
             height: 48,
-            decoration: const BoxDecoration(
-              color: AppColors.sage,
+            decoration: BoxDecoration(
+              color: c.sage,
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -49,12 +50,12 @@ class SuccessCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.lg),
           Text(
             'Done!',
-            style: AppTypography.resultTitle(color: AppColors.ink),
+            style: AppTypography.resultTitle(color: c.ink),
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
             fileName,
-            style: AppTypography.label(color: AppColors.inkMuted),
+            style: AppTypography.label(color: c.inkMuted),
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,

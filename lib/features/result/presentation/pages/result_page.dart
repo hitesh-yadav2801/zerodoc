@@ -66,8 +66,9 @@ class ResultPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return Scaffold(
-      backgroundColor: AppColors.paperBg,
+      backgroundColor: c.paperBg,
       body: SafeArea(
         child: Column(
           children: [
@@ -77,9 +78,9 @@ class ResultPage extends StatelessWidget {
                 children: [
                   IconButton(
                     onPressed: () => context.pop(),
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.close_rounded,
-                      color: AppColors.ink,
+                      color: c.ink,
                     ),
                   ),
                 ],

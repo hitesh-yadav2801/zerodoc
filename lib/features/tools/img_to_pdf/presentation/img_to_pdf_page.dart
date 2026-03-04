@@ -89,6 +89,7 @@ class _ImgToPdfPageState extends ConsumerState<ImgToPdfPage> {
   }
 
   Widget _buildFileSection() {
+    final c = AppColors.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -131,8 +132,8 @@ class _ImgToPdfPageState extends ConsumerState<ImgToPdfPage> {
                           child: Container(
                             width: 20,
                             height: 20,
-                            decoration: const BoxDecoration(
-                              color: AppColors.ink,
+                            decoration: BoxDecoration(
+                              color: c.ink,
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
@@ -152,7 +153,7 @@ class _ImgToPdfPageState extends ConsumerState<ImgToPdfPage> {
           const SizedBox(height: 8),
           Text(
             '${_images.length} image${_images.length == 1 ? '' : 's'} — drag to reorder',
-            style: AppTypography.caption(color: AppColors.inkMuted),
+            style: AppTypography.caption(color: c.inkMuted),
           ),
           const SizedBox(height: 12),
         ],
@@ -162,16 +163,16 @@ class _ImgToPdfPageState extends ConsumerState<ImgToPdfPage> {
             width: double.infinity,
             height: 80,
             decoration: BoxDecoration(
-              color: AppColors.paperCard,
+              color: c.paperCard,
               borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
               border: Border.all(
-                color: AppColors.ink.withValues(alpha: 0.15),
+                color: c.ink.withValues(alpha: 0.15),
               ),
             ),
             child: Center(
               child: Text(
                 _images.isEmpty ? 'Tap to import images' : '+ Add more images',
-                style: AppTypography.body(color: AppColors.inkMuted),
+                style: AppTypography.body(color: c.inkMuted),
               ),
             ),
           ),

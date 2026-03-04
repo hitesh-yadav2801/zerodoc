@@ -9,22 +9,23 @@ class ProcessingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(
+          SizedBox(
             width: 48,
             height: 48,
             child: CircularProgressIndicator(
-              color: AppColors.slate,
+              color: c.slate,
               strokeWidth: 3,
             ),
           ),
           const SizedBox(height: 24),
           Text(
             message,
-            style: AppTypography.body(color: AppColors.inkMuted),
+            style: AppTypography.body(color: c.inkMuted),
           ),
         ],
       ),

@@ -106,10 +106,11 @@ class _SanitizePageState extends ConsumerState<SanitizePage> {
   }
 
   Widget _buildInfo() {
+    final c = AppColors.of(context);
     return Container(
       padding: AppSpacing.cardPadding,
       decoration: BoxDecoration(
-        color: AppColors.paperCard,
+        color: c.paperCard,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
       ),
       child: Column(
@@ -117,7 +118,7 @@ class _SanitizePageState extends ConsumerState<SanitizePage> {
         children: [
           Text(
             'What gets removed',
-            style: AppTypography.label(color: AppColors.ink),
+            style: AppTypography.label(color: c.ink),
           ),
           const SizedBox(height: 12),
           _infoRow(Icons.person_rounded, 'Author'),
@@ -128,7 +129,7 @@ class _SanitizePageState extends ConsumerState<SanitizePage> {
           const SizedBox(height: 12),
           Text(
             'The PDF content itself is not modified.',
-            style: AppTypography.caption(color: AppColors.inkMuted),
+            style: AppTypography.caption(color: c.inkMuted),
           ),
         ],
       ),
@@ -136,13 +137,14 @@ class _SanitizePageState extends ConsumerState<SanitizePage> {
   }
 
   Widget _infoRow(IconData icon, String label) {
+    final c = AppColors.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: AppColors.slate),
+          Icon(icon, size: 18, color: c.slate),
           const SizedBox(width: 10),
-          Text(label, style: AppTypography.body(color: AppColors.ink)),
+          Text(label, style: AppTypography.body(color: c.ink)),
         ],
       ),
     );
