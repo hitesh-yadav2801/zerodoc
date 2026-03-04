@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:zerodoc/core/theme/app_colors.dart';
 
 abstract final class AppTheme {
@@ -78,12 +77,11 @@ abstract final class AppTheme {
       brightness: brightness,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: paperBg,
-      textTheme: GoogleFonts.dmSansTextTheme(
-        ThemeData(brightness: brightness).textTheme,
-      ).apply(
-        bodyColor: ink,
-        displayColor: ink,
-      ),
+      textTheme: ThemeData(brightness: brightness).textTheme.apply(
+            fontFamily: 'DM Sans',
+            bodyColor: ink,
+            displayColor: ink,
+          ),
       cardTheme: CardThemeData(
         elevation: 0,
         color: paperCard,
@@ -98,7 +96,8 @@ abstract final class AppTheme {
           foregroundColor: Colors.white,
           shape: const StadiumBorder(),
           minimumSize: const Size(double.infinity, 52),
-          textStyle: GoogleFonts.dmSans(
+          textStyle: const TextStyle(
+            fontFamily: 'DM Sans',
             fontSize: 15,
             fontWeight: FontWeight.w500,
           ),
@@ -111,7 +110,8 @@ abstract final class AppTheme {
           shape: const StadiumBorder(),
           side: BorderSide(color: slate, width: 1.5),
           minimumSize: const Size(double.infinity, 52),
-          textStyle: GoogleFonts.dmSans(
+          textStyle: const TextStyle(
+            fontFamily: 'DM Sans',
             fontSize: 15,
             fontWeight: FontWeight.w500,
           ),
@@ -120,7 +120,8 @@ abstract final class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: slate,
-          textStyle: GoogleFonts.dmSans(
+          textStyle: const TextStyle(
+            fontFamily: 'DM Sans',
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
@@ -138,11 +139,13 @@ abstract final class AppTheme {
         unselectedItemColor: inkMuted,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
-        selectedLabelStyle: GoogleFonts.dmSans(
+        selectedLabelStyle: const TextStyle(
+          fontFamily: 'DM Sans',
           fontSize: 11,
           fontWeight: FontWeight.w500,
         ),
-        unselectedLabelStyle: GoogleFonts.dmSans(
+        unselectedLabelStyle: const TextStyle(
+          fontFamily: 'DM Sans',
           fontSize: 11,
           fontWeight: FontWeight.w500,
         ),
@@ -189,7 +192,8 @@ abstract final class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: ink,
-        contentTextStyle: GoogleFonts.dmSans(
+        contentTextStyle: const TextStyle(
+          fontFamily: 'DM Sans',
           fontSize: 14,
           color: Colors.white,
         ),
