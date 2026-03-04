@@ -16,6 +16,7 @@ class FileDropZone extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
@@ -23,28 +24,28 @@ class FileDropZone extends StatelessWidget {
       },
       child: CustomPaint(
         painter: _DashedBorderPainter(
-          color: AppColors.ink.withValues(alpha: 0.2),
+          color: c.ink.withValues(alpha: 0.2),
           radius: AppSpacing.cardRadius,
         ),
         child: Container(
           width: double.infinity,
           height: AppSpacing.dropZoneHeight,
           decoration: BoxDecoration(
-            color: AppColors.paperCard,
+            color: c.paperCard,
             borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
+              Icon(
                 Icons.upload_rounded,
                 size: AppSpacing.iconLg,
-                color: AppColors.inkMuted,
+                color: c.inkMuted,
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
                 label,
-                style: AppTypography.body(color: AppColors.inkMuted),
+                style: AppTypography.body(color: c.inkMuted),
               ),
             ],
           ),

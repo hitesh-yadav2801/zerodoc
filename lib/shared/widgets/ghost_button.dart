@@ -16,11 +16,12 @@ class GhostButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return TextButton(
       onPressed: onPressed,
       child: Text(
         label,
-        style: AppTypography.label(color: color ?? AppColors.slate),
+        style: AppTypography.label(color: color ?? c.slate),
       ),
     );
   }

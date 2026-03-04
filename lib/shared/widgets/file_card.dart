@@ -43,7 +43,7 @@ class _FileCardState extends State<FileCard> {
     return parts.join(' · ');
   }
 
-  Widget _buildCard() {
+  Widget _buildCard(AppColorsResolved c) {
     return GestureDetector(
       onTapDown: (_) => setState(() => _pressed = true),
       onTapUp: (_) {
@@ -60,9 +60,9 @@ class _FileCardState extends State<FileCard> {
           height: AppSpacing.fileCardHeight,
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
-            color: AppColors.paperCard,
+            color: c.paperCard,
             borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-            boxShadow: AppShadows.sm,
+            boxShadow: AppShadows.sm(context),
           ),
           child: Row(
             children: [
@@ -70,12 +70,12 @@ class _FileCardState extends State<FileCard> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: AppColors.slateLight,
+                  color: c.slateLight,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.picture_as_pdf_rounded,
-                  color: AppColors.slate,
+                  color: c.slate,
                   size: 22,
                 ),
               ),
@@ -87,15 +87,14 @@ class _FileCardState extends State<FileCard> {
                   children: [
                     Text(
                       widget.fileName,
-                      style: AppTypography.bodyMedium(color: AppColors.ink),
+                      style: AppTypography.bodyMedium(color: c.ink),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     if (_metadata.isNotEmpty)
                       Text(
                         _metadata,
-                        style:
-                            AppTypography.caption(color: AppColors.inkMuted),
+                        style: AppTypography.caption(color: c.inkMuted),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -111,7 +110,8 @@ class _FileCardState extends State<FileCard> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.onDismissed == null) return _buildCard();
+    final c = AppColors.of(context);
+    if (widget.onDismissed == null) return _buildCard(c);
 
     return Dismissible(
       key: ValueKey(widget.dismissKey ?? widget.fileName),
@@ -124,12 +124,12 @@ class _FileCardState extends State<FileCard> {
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 24),
         decoration: BoxDecoration(
-          color: AppColors.terracotta,
+          color: c.terracotta,
           borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
         ),
         child: const Icon(Icons.delete_rounded, color: Colors.white),
       ),
-      child: _buildCard(),
+      child: _buildCard(c),
     );
   }
 }

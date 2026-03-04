@@ -124,10 +124,11 @@ class _EncryptPageState extends ConsumerState<EncryptPage> {
   }
 
   Widget _buildOptions() {
+    final c = AppColors.of(context);
     return Container(
       padding: AppSpacing.cardPadding,
       decoration: BoxDecoration(
-        color: AppColors.paperCard,
+        color: c.paperCard,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
       ),
       child: Column(
@@ -135,14 +136,14 @@ class _EncryptPageState extends ConsumerState<EncryptPage> {
         children: [
           Text(
             'Set Password',
-            style: AppTypography.label(color: AppColors.ink),
+            style: AppTypography.label(color: c.ink),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _passwordController,
             obscureText: _obscurePassword,
             onChanged: (_) => setState(() {}),
-            style: AppTypography.body(color: AppColors.ink),
+            style: AppTypography.body(color: c.ink),
             decoration: InputDecoration(
               hintText: 'Password',
               suffixIcon: IconButton(
@@ -152,7 +153,7 @@ class _EncryptPageState extends ConsumerState<EncryptPage> {
                   _obscurePassword
                       ? Icons.visibility_off_rounded
                       : Icons.visibility_rounded,
-                  color: AppColors.inkMuted,
+                  color: c.inkMuted,
                   size: 20,
                 ),
               ),
@@ -163,7 +164,7 @@ class _EncryptPageState extends ConsumerState<EncryptPage> {
             controller: _confirmController,
             obscureText: _obscurePassword,
             onChanged: (_) => setState(() {}),
-            style: AppTypography.body(color: AppColors.ink),
+            style: AppTypography.body(color: c.ink),
             decoration: const InputDecoration(
               hintText: 'Confirm password',
             ),
@@ -174,13 +175,13 @@ class _EncryptPageState extends ConsumerState<EncryptPage> {
               padding: const EdgeInsets.only(top: 8),
               child: Text(
                 'Passwords do not match',
-                style: AppTypography.caption(color: AppColors.terracotta),
+                style: AppTypography.caption(color: c.terracotta),
               ),
             ),
           const SizedBox(height: 8),
           Text(
             'AES-256 encryption',
-            style: AppTypography.caption(color: AppColors.inkMuted),
+            style: AppTypography.caption(color: c.inkMuted),
           ),
         ],
       ),

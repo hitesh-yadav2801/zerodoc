@@ -25,13 +25,14 @@ class WorkbenchPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final c = AppColors.of(context);
     final state = ref.watch(workbenchProvider(_arg));
 
     return Scaffold(
-      backgroundColor: AppColors.paperBg,
+      backgroundColor: c.paperBg,
       body: state.when(
-        loading: () => const Center(
-          child: CircularProgressIndicator(color: AppColors.slate),
+        loading: () => Center(
+          child: CircularProgressIndicator(color: c.slate),
         ),
         error: (error, _) => Center(
           child: Column(
@@ -40,19 +41,19 @@ class WorkbenchPage extends ConsumerWidget {
               Icon(
                 Icons.error_outline_rounded,
                 size: 48,
-                color: AppColors.terracotta.withValues(alpha: 0.6),
+                color: c.terracotta.withValues(alpha: 0.6),
               ),
               const SizedBox(height: AppSpacing.lg),
               Text(
                 'Could not open this file.',
-                style: AppTypography.body(color: AppColors.inkMuted),
+                style: AppTypography.body(color: c.inkMuted),
               ),
               const SizedBox(height: AppSpacing.lg),
               TextButton(
                 onPressed: () => context.pop(),
                 child: Text(
                   'Go Back',
-                  style: AppTypography.label(color: AppColors.slate),
+                  style: AppTypography.label(color: c.slate),
                 ),
               ),
             ],
@@ -99,13 +100,14 @@ class WorkbenchPage extends ConsumerWidget {
     WidgetRef ref,
     WorkbenchState wb,
   ) {
+    final c = AppColors.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       child: Row(
         children: [
           IconButton(
             onPressed: () => context.pop(),
-            icon: const Icon(Icons.arrow_back_rounded, color: AppColors.ink),
+            icon: Icon(Icons.arrow_back_rounded, color: c.ink),
           ),
           Expanded(
             child: GestureDetector(
@@ -116,23 +118,23 @@ class WorkbenchPage extends ConsumerWidget {
                   Flexible(
                     child: Text(
                       wb.fileName,
-                      style: AppTypography.sectionHeader(color: AppColors.ink),
+                      style: AppTypography.sectionHeader(color: c.ink),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   const SizedBox(width: 4),
-                  const Icon(
+                  Icon(
                     Icons.edit_rounded,
                     size: 16,
-                    color: AppColors.inkMuted,
+                    color: c.inkMuted,
                   ),
                 ],
               ),
             ),
           ),
           PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert_rounded, color: AppColors.ink),
+            icon: Icon(Icons.more_vert_rounded, color: c.ink),
             onSelected: (value) =>
                 _onMenuAction(context, ref, value, wb),
             itemBuilder: (_) => [
@@ -205,9 +207,9 @@ class WorkbenchPage extends ConsumerWidget {
           padding: const EdgeInsets.only(bottom: 12),
           child: Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.drag_handle_rounded,
-                color: AppColors.inkMuted,
+                color: AppColors.of(context).inkMuted,
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -236,7 +238,7 @@ class WorkbenchPage extends ConsumerWidget {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.paperCard,
+      backgroundColor: AppColors.of(context).paperCard,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),

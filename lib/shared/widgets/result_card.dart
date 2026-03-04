@@ -31,49 +31,50 @@ class ResultCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return ColoredBox(
-      color: AppColors.paperBg,
+      color: c.paperBg,
       child: Center(
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 32),
           padding: const EdgeInsets.all(AppSpacing.xxl),
           decoration: BoxDecoration(
-            color: AppColors.paperCard,
+            color: c.paperCard,
             borderRadius: BorderRadius.circular(24),
-            boxShadow: AppShadows.md,
+            boxShadow: AppShadows.md(context),
           ),
-          child: isError ? _buildError() : _buildSuccess(),
+          child: isError ? _buildError(c) : _buildSuccess(c),
         ),
       ),
     );
   }
 
-  Widget _buildSuccess() {
+  Widget _buildSuccess(AppColorsResolved c) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           width: AppSpacing.iconXxl,
           height: AppSpacing.iconXxl,
-          decoration: const BoxDecoration(
-            color: AppColors.sage,
+          decoration: BoxDecoration(
+            color: c.sage,
             shape: BoxShape.circle,
           ),
           child: const Icon(Icons.check_rounded, color: Colors.white, size: 28),
         ),
         const SizedBox(height: AppSpacing.lg),
-        Text('Done!', style: AppTypography.resultTitle(color: AppColors.ink)),
+        Text('Done!', style: AppTypography.resultTitle(color: c.ink)),
         const SizedBox(height: AppSpacing.xs),
         Text(
           fileName,
-          style: AppTypography.label(color: AppColors.inkMuted),
+          style: AppTypography.label(color: c.inkMuted),
           textAlign: TextAlign.center,
         ),
         if (sizeComparison != null) ...[
           const SizedBox(height: AppSpacing.md),
           Text(
             sizeComparison!,
-            style: AppTypography.caption(color: AppColors.inkMuted),
+            style: AppTypography.caption(color: c.inkMuted),
           ),
         ],
         const SizedBox(height: AppSpacing.xxl),
@@ -91,15 +92,15 @@ class ResultCard extends StatelessWidget {
     );
   }
 
-  Widget _buildError() {
+  Widget _buildError(AppColorsResolved c) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           width: AppSpacing.iconXxl,
           height: AppSpacing.iconXxl,
-          decoration: const BoxDecoration(
-            color: AppColors.terracotta,
+          decoration: BoxDecoration(
+            color: c.terracotta,
             shape: BoxShape.circle,
           ),
           child: const Icon(
@@ -111,13 +112,13 @@ class ResultCard extends StatelessWidget {
         const SizedBox(height: AppSpacing.lg),
         Text(
           'Something went wrong',
-          style: AppTypography.sectionHeader(color: AppColors.ink),
+          style: AppTypography.sectionHeader(color: c.ink),
         ),
         if (errorMessage != null) ...[
           const SizedBox(height: AppSpacing.sm),
           Text(
             errorMessage!,
-            style: AppTypography.label(color: AppColors.inkMuted),
+            style: AppTypography.label(color: c.inkMuted),
             textAlign: TextAlign.center,
           ),
         ],

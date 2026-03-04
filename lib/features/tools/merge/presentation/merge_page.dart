@@ -103,6 +103,7 @@ class _MergePageState extends ConsumerState<MergePage> {
   }
 
   Widget _buildFileSection() {
+    final c = AppColors.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -123,7 +124,7 @@ class _MergePageState extends ConsumerState<MergePage> {
             padding: const EdgeInsets.only(top: 8),
             child: Text(
               '${_files.length} file${_files.length == 1 ? '' : 's'} selected',
-              style: AppTypography.caption(color: AppColors.inkMuted),
+              style: AppTypography.caption(color: c.inkMuted),
             ),
           ),
       ],

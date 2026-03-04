@@ -119,10 +119,11 @@ class _UnlockPageState extends ConsumerState<UnlockPage> {
   }
 
   Widget _buildOptions() {
+    final c = AppColors.of(context);
     return Container(
       padding: AppSpacing.cardPadding,
       decoration: BoxDecoration(
-        color: AppColors.paperCard,
+        color: c.paperCard,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
       ),
       child: Column(
@@ -130,14 +131,14 @@ class _UnlockPageState extends ConsumerState<UnlockPage> {
         children: [
           Text(
             'Enter Password',
-            style: AppTypography.label(color: AppColors.ink),
+            style: AppTypography.label(color: c.ink),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _passwordController,
             obscureText: _obscurePassword,
             onChanged: (_) => setState(() {}),
-            style: AppTypography.body(color: AppColors.ink),
+            style: AppTypography.body(color: c.ink),
             decoration: InputDecoration(
               hintText: 'PDF password',
               suffixIcon: IconButton(
@@ -147,7 +148,7 @@ class _UnlockPageState extends ConsumerState<UnlockPage> {
                   _obscurePassword
                       ? Icons.visibility_off_rounded
                       : Icons.visibility_rounded,
-                  color: AppColors.inkMuted,
+                  color: c.inkMuted,
                   size: 20,
                 ),
               ),

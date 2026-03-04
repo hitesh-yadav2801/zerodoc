@@ -152,6 +152,7 @@ class _PdfToImgPageState extends ConsumerState<PdfToImgPage> {
   }
 
   Widget _buildPageGrid() {
+    final c = AppColors.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -160,7 +161,7 @@ class _PdfToImgPageState extends ConsumerState<PdfToImgPage> {
           children: [
             Text(
               'Select pages to export',
-              style: AppTypography.label(color: AppColors.ink),
+              style: AppTypography.label(color: c.ink),
             ),
             TextButton(
               onPressed: () {
@@ -178,7 +179,7 @@ class _PdfToImgPageState extends ConsumerState<PdfToImgPage> {
                 _selected.length == _thumbnails.length
                     ? 'Deselect All'
                     : 'Select All',
-                style: AppTypography.label(color: AppColors.slate),
+                style: AppTypography.label(color: c.slate),
               ),
             ),
           ],
@@ -201,15 +202,15 @@ class _PdfToImgPageState extends ConsumerState<PdfToImgPage> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  color: AppColors.paperWhite,
+                  color: c.paperWhite,
                   borderRadius:
                       BorderRadius.circular(AppSpacing.thumbnailRadius),
                   border: isSelected
-                      ? Border.all(color: AppColors.slate, width: 2.5)
+                      ? Border.all(color: c.slate, width: 2.5)
                       : null,
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.shadowSm,
+                      color: c.shadowSm,
                       blurRadius: isSelected ? 12 : 6,
                       offset: const Offset(0, 2),
                     ),
@@ -231,9 +232,9 @@ class _PdfToImgPageState extends ConsumerState<PdfToImgPage> {
                           ),
                         )
                       else
-                        const Center(
+                        Center(
                           child: Icon(Icons.broken_image_rounded,
-                              color: AppColors.inkMuted),
+                              color: c.inkMuted),
                         ),
                       Positioned(
                         right: 4,
@@ -241,15 +242,15 @@ class _PdfToImgPageState extends ConsumerState<PdfToImgPage> {
                         child: Container(
                           width: 20,
                           height: 20,
-                          decoration: const BoxDecoration(
-                            color: AppColors.paperBg,
+                          decoration: BoxDecoration(
+                            color: c.paperBg,
                             shape: BoxShape.circle,
                           ),
                           alignment: Alignment.center,
                           child: Text(
                             '${index + 1}',
                             style: AppTypography.pageBadge(
-                                color: AppColors.inkMuted),
+                                color: c.inkMuted),
                           ),
                         ),
                       ),

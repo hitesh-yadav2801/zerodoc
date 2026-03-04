@@ -11,10 +11,11 @@ abstract final class AppSnackBar {
     String? actionLabel,
     VoidCallback? onAction,
   }) {
+    final c = AppColors.of(context);
     final dotColor = isError
-        ? AppColors.terracotta
+        ? c.terracotta
         : isSuccess
-            ? AppColors.sage
+            ? c.sage
             : null;
 
     ScaffoldMessenger.of(context)
@@ -46,7 +47,7 @@ abstract final class AppSnackBar {
           action: actionLabel != null && onAction != null
               ? SnackBarAction(
                   label: actionLabel,
-                  textColor: AppColors.sage,
+                  textColor: c.sage,
                   onPressed: onAction,
                 )
               : null,

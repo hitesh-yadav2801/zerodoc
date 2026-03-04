@@ -24,6 +24,7 @@ class PageThumbnailTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
@@ -37,11 +38,11 @@ class PageThumbnailTile extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
         decoration: BoxDecoration(
-          color: AppColors.paperWhite,
+          color: c.paperWhite,
           borderRadius: BorderRadius.circular(AppSpacing.thumbnailRadius),
-          boxShadow: pageState.isSelected ? AppShadows.md : AppShadows.sm,
+          boxShadow: pageState.isSelected ? AppShadows.md(context) : AppShadows.sm(context),
           border: pageState.isSelected
-              ? Border.all(color: AppColors.slate, width: 2.5)
+              ? Border.all(color: c.slate, width: 2.5)
               : null,
         ),
         child: ClipRRect(
@@ -63,9 +64,9 @@ class PageThumbnailTile extends StatelessWidget {
                   ),
                 )
               else
-                const Center(
+                Center(
                   child: CircularProgressIndicator(
-                    color: AppColors.slate,
+                    color: c.slate,
                     strokeWidth: 2,
                   ),
                 ),
@@ -75,14 +76,14 @@ class PageThumbnailTile extends StatelessWidget {
                 child: Container(
                   width: 22,
                   height: 22,
-                  decoration: const BoxDecoration(
-                    color: AppColors.paperBg,
+                  decoration: BoxDecoration(
+                    color: c.paperBg,
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,
                   child: Text(
                     '${displayIndex + 1}',
-                    style: AppTypography.pageBadge(color: AppColors.inkMuted),
+                    style: AppTypography.pageBadge(color: c.inkMuted),
                   ),
                 ),
               ),

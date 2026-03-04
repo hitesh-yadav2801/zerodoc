@@ -18,6 +18,7 @@ class AppChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
@@ -28,17 +29,17 @@ class AppChip extends StatelessWidget {
         height: AppSpacing.chipHeight,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: isActive ? AppColors.slate : AppColors.paperWhite,
+          color: isActive ? c.slate : c.paperWhite,
           borderRadius: BorderRadius.circular(AppSpacing.chipRadius),
           border: isActive
               ? null
-              : Border.all(color: AppColors.divider),
+              : Border.all(color: c.divider),
         ),
         alignment: Alignment.center,
         child: Text(
           label,
           style: AppTypography.chip(
-            color: isActive ? Colors.white : AppColors.ink,
+            color: isActive ? Colors.white : c.ink,
           ),
         ),
       ),

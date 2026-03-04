@@ -22,6 +22,7 @@ class PageThumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -30,9 +31,11 @@ class PageThumbnail extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(AppSpacing.thumbnailRadius),
-          boxShadow: isSelected ? AppShadows.md : AppShadows.sm,
+          boxShadow: isSelected
+              ? AppShadows.md(context)
+              : AppShadows.sm(context),
           border: isSelected
-              ? Border.all(color: AppColors.slate, width: 2.5)
+              ? Border.all(color: c.slate, width: 2.5)
               : null,
         ),
         child: Stack(
@@ -52,7 +55,7 @@ class PageThumbnail extends StatelessWidget {
                       child: Center(
                         child: Icon(
                           Icons.description_outlined,
-                          color: AppColors.inkMuted.withValues(alpha: 0.3),
+                          color: c.inkMuted.withValues(alpha: 0.3),
                           size: 32,
                         ),
                       ),
@@ -64,14 +67,14 @@ class PageThumbnail extends StatelessWidget {
               child: Container(
                 width: 20,
                 height: 20,
-                decoration: const BoxDecoration(
-                  color: AppColors.paperBg,
+                decoration: BoxDecoration(
+                  color: c.paperBg,
                   shape: BoxShape.circle,
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   '$pageNumber',
-                  style: AppTypography.pageBadge(color: AppColors.inkMuted),
+                  style: AppTypography.pageBadge(color: c.inkMuted),
                 ),
               ),
             ),

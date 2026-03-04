@@ -21,18 +21,19 @@ class ImportedFileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: AppColors.paperCard,
+        color: c.paperCard,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-        boxShadow: AppShadows.sm,
+        boxShadow: AppShadows.sm(context),
       ),
       child: Row(
         children: [
-          const Icon(
+          Icon(
             Icons.picture_as_pdf_rounded,
-            color: AppColors.slate,
+            color: c.slate,
             size: 28,
           ),
           const SizedBox(width: 12),
@@ -42,7 +43,7 @@ class ImportedFileCard extends StatelessWidget {
               children: [
                 Text(
                   fileName,
-                  style: AppTypography.label(color: AppColors.ink),
+                  style: AppTypography.label(color: c.ink),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -53,17 +54,17 @@ class ImportedFileCard extends StatelessWidget {
                       if (sizeBytes != null)
                         FileService.formatFileSize(sizeBytes!),
                     ].join(' · '),
-                    style: AppTypography.caption(color: AppColors.inkMuted),
+                    style: AppTypography.caption(color: c.inkMuted),
                   ),
               ],
             ),
           ),
           IconButton(
             onPressed: onRemove,
-            icon: const Icon(
+            icon: Icon(
               Icons.close_rounded,
               size: 18,
-              color: AppColors.inkMuted,
+              color: c.inkMuted,
             ),
             visualDensity: VisualDensity.compact,
           ),

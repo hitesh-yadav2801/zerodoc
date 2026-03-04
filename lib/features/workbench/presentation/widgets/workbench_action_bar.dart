@@ -21,6 +21,7 @@ class WorkbenchActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return AnimatedSlide(
       offset: visible ? Offset.zero : const Offset(0, 2),
       duration: const Duration(milliseconds: 250),
@@ -34,9 +35,9 @@ class WorkbenchActionBar extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 24, left: 32, right: 32),
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.ink,
+              color: c.ink,
               borderRadius: BorderRadius.circular(100),
-              boxShadow: AppShadows.lg,
+              boxShadow: AppShadows.lg(context),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -60,7 +61,7 @@ class WorkbenchActionBar extends StatelessWidget {
                   icon: Icons.delete_rounded,
                   tooltip: 'Delete',
                   onTap: onDelete,
-                  color: AppColors.terracotta,
+                  color: c.terracotta,
                 ),
               ],
             ),

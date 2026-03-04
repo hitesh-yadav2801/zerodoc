@@ -56,18 +56,19 @@ class ToolsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return SafeArea(
       child: ListView(
         padding: AppSpacing.pagePadding.copyWith(top: 24),
         children: [
           Text(
             'All Tools',
-            style: AppTypography.pageTitle(color: AppColors.ink),
+            style: AppTypography.pageTitle(color: c.ink),
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
             AppStrings.slogan,
-            style: AppTypography.caption(color: AppColors.inkMuted),
+            style: AppTypography.caption(color: c.inkMuted),
           ),
           const SizedBox(height: AppSpacing.xxl),
           for (int i = 0; i < _categories.length; i++) ...[
@@ -108,12 +109,13 @@ class _ToolCategorySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: AppTypography.chip(color: AppColors.inkMuted),
+          style: AppTypography.chip(color: c.inkMuted),
         ),
         const SizedBox(height: AppSpacing.md),
         Row(

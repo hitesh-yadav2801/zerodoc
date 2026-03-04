@@ -32,12 +32,13 @@ class ToolScreenShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return Scaffold(
-      backgroundColor: AppColors.paperBg,
+      backgroundColor: c.paperBg,
       body: SafeArea(
         child: Column(
           children: [
-            _buildAppBar(context),
+            _buildAppBar(context, c),
             Expanded(
               child: ListView(
                 padding: AppSpacing.pagePadding.copyWith(top: 8, bottom: 100),
@@ -50,39 +51,39 @@ class ToolScreenShell extends StatelessWidget {
                 ],
               ),
             ),
-            _buildActionBar(),
+            _buildActionBar(c),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
+  Widget _buildAppBar(BuildContext context, AppColorsResolved c) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       child: Row(
         children: [
           IconButton(
             onPressed: () => context.pop(),
-            icon: const Icon(Icons.arrow_back_rounded, color: AppColors.ink),
+            icon: Icon(Icons.arrow_back_rounded, color: c.ink),
           ),
           const SizedBox(width: 4),
           Text(
             title,
-            style: AppTypography.sectionHeader(color: AppColors.ink),
+            style: AppTypography.sectionHeader(color: c.ink),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildActionBar() {
+  Widget _buildActionBar(AppColorsResolved c) {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-      decoration: const BoxDecoration(
-        color: AppColors.paperBg,
+      decoration: BoxDecoration(
+        color: c.paperBg,
         border: Border(
-          top: BorderSide(color: AppColors.divider),
+          top: BorderSide(color: c.divider),
         ),
       ),
       child: PrimaryButton(
