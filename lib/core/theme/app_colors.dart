@@ -64,9 +64,7 @@ abstract final class AppColors {
   // ── Context-aware resolver ──
 
   static AppColorsResolved of(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark
-        ? _dark
-        : _light;
+    return Theme.of(context).brightness == Brightness.dark ? _dark : _light;
   }
 
   static const _light = AppColorsResolved(

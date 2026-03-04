@@ -31,9 +31,7 @@ class AppChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: isActive ? c.slate : c.paperWhite,
           borderRadius: BorderRadius.circular(AppSpacing.chipRadius),
-          border: isActive
-              ? null
-              : Border.all(color: c.divider),
+          border: isActive ? null : Border.all(color: c.divider),
         ),
         alignment: Alignment.center,
         child: Text(

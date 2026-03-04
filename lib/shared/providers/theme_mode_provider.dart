@@ -4,8 +4,9 @@ import 'package:zerodoc/shared/providers/shared_preferences_provider.dart';
 
 const _key = 'theme_mode';
 
-final themeModeProvider =
-    NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
+final themeModeProvider = NotifierProvider<ThemeModeNotifier, ThemeMode>(
+  ThemeModeNotifier.new,
+);
 
 class ThemeModeNotifier extends Notifier<ThemeMode> {
   @override

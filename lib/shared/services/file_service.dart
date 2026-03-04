@@ -6,6 +6,26 @@ import 'package:path_provider/path_provider.dart';
 import 'package:zerodoc/core/utils/app_logger.dart';
 
 class FileService {
+  Future<List<File>> pickMultiplePdfs() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+        allowMultiple: true,
+      );
+
+      if (result == null || result.files.isEmpty) return [];
+
+      return result.files
+          .where((f) => f.path != null)
+          .map((f) => File(f.path!))
+          .toList();
+    } on Exception catch (e, st) {
+      log.e('Failed to pick multiple PDFs', error: e, stackTrace: st);
+      return [];
+    }
+  }
+
   Future<File?> pickPdf() async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -74,8 +94,10 @@ class FileService {
     if (bytes <= 0) return '0 B';
 
     const suffixes = ['B', 'KB', 'MB', 'GB'];
-    final i =
-        (math.log(bytes) / math.ln2 / 10).floor().clamp(0, suffixes.length - 1);
+    final i = (math.log(bytes) / math.ln2 / 10).floor().clamp(
+      0,
+      suffixes.length - 1,
+    );
     final size = bytes / math.pow(1024, i);
 
     return '${size.toStringAsFixed(i == 0 ? 0 : 1)} ${suffixes[i]}';

@@ -3,34 +3,34 @@ import 'package:zerodoc/core/theme/app_colors.dart';
 
 abstract final class AppTheme {
   static ThemeData get light => _buildTheme(
-        brightness: Brightness.light,
-        paperBg: AppColors.paperBg,
-        paperCard: AppColors.paperCard,
-        paperWhite: AppColors.paperWhite,
-        ink: AppColors.ink,
-        inkMuted: AppColors.inkMuted,
-        slate: AppColors.slate,
-        slateLight: AppColors.slateLight,
-        sage: AppColors.sage,
-        terracotta: AppColors.terracotta,
-        terracottaBg: AppColors.terracottaBg,
-        divider: AppColors.divider,
-      );
+    brightness: Brightness.light,
+    paperBg: AppColors.paperBg,
+    paperCard: AppColors.paperCard,
+    paperWhite: AppColors.paperWhite,
+    ink: AppColors.ink,
+    inkMuted: AppColors.inkMuted,
+    slate: AppColors.slate,
+    slateLight: AppColors.slateLight,
+    sage: AppColors.sage,
+    terracotta: AppColors.terracotta,
+    terracottaBg: AppColors.terracottaBg,
+    divider: AppColors.divider,
+  );
 
   static ThemeData get dark => _buildTheme(
-        brightness: Brightness.dark,
-        paperBg: AppColors.darkPaperBg,
-        paperCard: AppColors.darkPaperCard,
-        paperWhite: AppColors.darkPaperWhite,
-        ink: AppColors.darkInk,
-        inkMuted: AppColors.darkInkMuted,
-        slate: AppColors.darkSlate,
-        slateLight: AppColors.darkSlateLight,
-        sage: AppColors.darkSage,
-        terracotta: AppColors.darkTerracotta,
-        terracottaBg: AppColors.darkTerracottaBg,
-        divider: AppColors.darkDivider,
-      );
+    brightness: Brightness.dark,
+    paperBg: AppColors.darkPaperBg,
+    paperCard: AppColors.darkPaperCard,
+    paperWhite: AppColors.darkPaperWhite,
+    ink: AppColors.darkInk,
+    inkMuted: AppColors.darkInkMuted,
+    slate: AppColors.darkSlate,
+    slateLight: AppColors.darkSlateLight,
+    sage: AppColors.darkSage,
+    terracotta: AppColors.darkTerracotta,
+    terracottaBg: AppColors.darkTerracottaBg,
+    divider: AppColors.darkDivider,
+  );
 
   static ThemeData _buildTheme({
     required Brightness brightness,
@@ -78,10 +78,10 @@ abstract final class AppTheme {
       colorScheme: colorScheme,
       scaffoldBackgroundColor: paperBg,
       textTheme: ThemeData(brightness: brightness).textTheme.apply(
-            fontFamily: 'DM Sans',
-            bodyColor: ink,
-            displayColor: ink,
-          ),
+        fontFamily: 'DM Sans',
+        bodyColor: ink,
+        displayColor: ink,
+      ),
       cardTheme: CardThemeData(
         elevation: 0,
         color: paperCard,
@@ -172,8 +172,10 @@ abstract final class AppTheme {
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(color: slate, width: 1.5),
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {

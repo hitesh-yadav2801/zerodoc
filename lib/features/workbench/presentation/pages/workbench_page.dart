@@ -4,21 +4,27 @@ import 'package:go_router/go_router.dart';
 import 'package:zerodoc/core/constants/app_spacing.dart';
 import 'package:zerodoc/core/theme/app_colors.dart';
 import 'package:zerodoc/core/theme/app_typography.dart';
+import 'package:zerodoc/features/home/domain/entities/desk_file.dart';
+import 'package:zerodoc/features/tools/domain/models/picked_file.dart';
+import 'package:zerodoc/features/tools/presentation/utils/desk_integration_helper.dart';
 import 'package:zerodoc/features/workbench/presentation/providers/workbench_provider.dart';
 import 'package:zerodoc/features/workbench/presentation/widgets/page_thumbnail_tile.dart';
 import 'package:zerodoc/features/workbench/presentation/widgets/rename_bottom_sheet.dart';
 import 'package:zerodoc/features/workbench/presentation/widgets/workbench_action_bar.dart';
 import 'package:zerodoc/shared/widgets/app_snackbar.dart';
+import 'dart:io';
 
 class WorkbenchPage extends ConsumerWidget {
   const WorkbenchPage({
     required this.filePath,
     required this.fileName,
+    this.deskFile,
     super.key,
   });
 
   final String filePath;
   final String fileName;
+  final DeskFile? deskFile;
 
   ({String filePath, String fileName}) get _arg =>
       (filePath: filePath, fileName: fileName);
@@ -135,8 +141,7 @@ class WorkbenchPage extends ConsumerWidget {
           ),
           PopupMenuButton<String>(
             icon: Icon(Icons.more_vert_rounded, color: c.ink),
-            onSelected: (value) =>
-                _onMenuAction(context, ref, value, wb),
+            onSelected: (value) => _onMenuAction(context, ref, value, wb),
             itemBuilder: (_) => [
               const PopupMenuItem(
                 value: 'select_all',
@@ -188,8 +193,9 @@ class WorkbenchPage extends ConsumerWidget {
     return ReorderableListView.builder(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
       itemCount: wb.pages.length,
-      onReorder: (oldIndex, newIndex) =>
-          ref.read(workbenchProvider(_arg).notifier).reorder(oldIndex, newIndex),
+      onReorder: (oldIndex, newIndex) => ref
+          .read(workbenchProvider(_arg).notifier)
+          .reorder(oldIndex, newIndex),
       proxyDecorator: (child, index, animation) {
         return AnimatedBuilder(
           animation: animation,
@@ -270,35 +276,77 @@ class WorkbenchPage extends ConsumerWidget {
   }
 
   Future<void> _onSaveCopy(BuildContext context, WidgetRef ref) async {
-    final (failure, outputPath) =
-        await ref.read(workbenchProvider(_arg).notifier).saveAsNewCopy();
+    final (failure, outputPath) = await ref
+        .read(workbenchProvider(_arg).notifier)
+        .saveAsNewCopy();
     if (!context.mounted) return;
     if (failure != null) {
       AppSnackBar.show(context, message: failure.message, isError: true);
     } else {
       final wb = ref.read(workbenchProvider(_arg)).value;
-      await context.push('/result', extra: {
-        'outputPath': outputPath,
-        'fileName': wb?.fileName ?? fileName,
-        'showOpenInWorkbench': true,
-      });
+
+      await DeskIntegrationHelper.handleOutput(
+        ref: ref,
+        outputFile: File(outputPath!),
+        inputs: deskFile != null
+            ? [
+                PickedFile(
+                  file: File(filePath),
+                  name: fileName,
+                  deskFile: deskFile,
+                ),
+              ]
+            : [PickedFile(file: File(filePath), name: fileName)],
+      );
+
+      if (!context.mounted) return;
+
+      await context.push(
+        '/result',
+        extra: {
+          'outputPath': outputPath,
+          'fileName': wb?.fileName ?? fileName,
+          'showOpenInWorkbench': true,
+        },
+      );
     }
   }
 
   Future<void> _onExtract(BuildContext context, WidgetRef ref) async {
-    final (failure, outputPath) =
-        await ref.read(workbenchProvider(_arg).notifier).extractSelected();
+    final (failure, outputPath) = await ref
+        .read(workbenchProvider(_arg).notifier)
+        .extractSelected();
     if (!context.mounted) return;
     if (failure != null) {
       AppSnackBar.show(context, message: failure.message, isError: true);
     } else {
       ref.read(workbenchProvider(_arg).notifier).deselectAll();
       final baseName = fileName.replaceAll(RegExp(r'\.pdf$'), '');
-      await context.push('/result', extra: {
-        'outputPath': outputPath,
-        'fileName': '${baseName}_extract.pdf',
-        'showOpenInWorkbench': true,
-      });
+
+      await DeskIntegrationHelper.handleOutput(
+        ref: ref,
+        outputFile: File(outputPath!),
+        inputs: deskFile != null
+            ? [
+                PickedFile(
+                  file: File(filePath),
+                  name: fileName,
+                  deskFile: deskFile,
+                ),
+              ]
+            : [PickedFile(file: File(filePath), name: fileName)],
+      );
+
+      if (!context.mounted) return;
+
+      await context.push(
+        '/result',
+        extra: {
+          'outputPath': outputPath,
+          'fileName': '${baseName}_extract.pdf',
+          'showOpenInWorkbench': true,
+        },
+      );
     }
   }
 

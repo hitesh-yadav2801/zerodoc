@@ -15,41 +15,97 @@ class ToolsPage extends StatelessWidget {
     _ToolCategoryData(
       label: 'Organize',
       tools: [
-        _ToolDef(icon: Icons.call_merge_rounded, label: 'Merge', id: ToolRoutes.merge),
-        _ToolDef(icon: Icons.call_split_rounded, label: 'Split', id: ToolRoutes.split),
-        _ToolDef(icon: Icons.swap_vert_rounded, label: 'Reorder', id: ToolRoutes.reorder),
+        _ToolDef(
+          icon: Icons.call_merge_rounded,
+          label: 'Merge',
+          id: ToolRoutes.merge,
+        ),
+        _ToolDef(
+          icon: Icons.call_split_rounded,
+          label: 'Split',
+          id: ToolRoutes.split,
+        ),
+        _ToolDef(
+          icon: Icons.swap_vert_rounded,
+          label: 'Reorder',
+          id: ToolRoutes.reorder,
+        ),
       ],
     ),
     _ToolCategoryData(
       label: 'Modify',
       tools: [
-        _ToolDef(icon: Icons.rotate_right_rounded, label: 'Rotate', id: ToolRoutes.rotate),
-        _ToolDef(icon: Icons.compress_rounded, label: 'Compress', id: ToolRoutes.compress),
-        _ToolDef(icon: Icons.filter_b_and_w_rounded, label: 'Grayscale', id: ToolRoutes.grayscale),
+        _ToolDef(
+          icon: Icons.rotate_right_rounded,
+          label: 'Rotate',
+          id: ToolRoutes.rotate,
+        ),
+        _ToolDef(
+          icon: Icons.compress_rounded,
+          label: 'Compress',
+          id: ToolRoutes.compress,
+        ),
+        _ToolDef(
+          icon: Icons.filter_b_and_w_rounded,
+          label: 'Grayscale',
+          id: ToolRoutes.grayscale,
+        ),
       ],
     ),
     _ToolCategoryData(
       label: 'Secure',
       tools: [
-        _ToolDef(icon: Icons.lock_rounded, label: 'Encrypt', id: ToolRoutes.encrypt),
-        _ToolDef(icon: Icons.lock_open_rounded, label: 'Unlock', id: ToolRoutes.unlock),
-        _ToolDef(icon: Icons.cleaning_services_rounded, label: 'Sanitize', id: ToolRoutes.sanitize),
+        _ToolDef(
+          icon: Icons.lock_rounded,
+          label: 'Encrypt',
+          id: ToolRoutes.encrypt,
+        ),
+        _ToolDef(
+          icon: Icons.lock_open_rounded,
+          label: 'Unlock',
+          id: ToolRoutes.unlock,
+        ),
+        _ToolDef(
+          icon: Icons.cleaning_services_rounded,
+          label: 'Sanitize',
+          id: ToolRoutes.sanitize,
+        ),
       ],
     ),
     _ToolCategoryData(
       label: 'Convert',
       tools: [
-        _ToolDef(icon: Icons.image_rounded, label: 'Img→PDF', id: ToolRoutes.imgToPdf),
-        _ToolDef(icon: Icons.photo_library_rounded, label: 'PDF→Img', id: ToolRoutes.pdfToImg),
-        _ToolDef(icon: Icons.text_snippet_rounded, label: 'OCR', id: ToolRoutes.ocr),
+        _ToolDef(
+          icon: Icons.image_rounded,
+          label: 'Img→PDF',
+          id: ToolRoutes.imgToPdf,
+        ),
+        _ToolDef(
+          icon: Icons.photo_library_rounded,
+          label: 'PDF→Img',
+          id: ToolRoutes.pdfToImg,
+        ),
+        _ToolDef(
+          icon: Icons.text_snippet_rounded,
+          label: 'OCR',
+          id: ToolRoutes.ocr,
+        ),
       ],
     ),
     _ToolCategoryData(
       label: 'Annotate',
       tools: [
         _ToolDef(icon: Icons.draw_rounded, label: 'Sign', id: ToolRoutes.sign),
-        _ToolDef(icon: Icons.branding_watermark_rounded, label: 'Watermark', id: ToolRoutes.watermark),
-        _ToolDef(icon: Icons.format_list_numbered_rounded, label: 'Page #', id: ToolRoutes.pageNumbers),
+        _ToolDef(
+          icon: Icons.branding_watermark_rounded,
+          label: 'Watermark',
+          id: ToolRoutes.watermark,
+        ),
+        _ToolDef(
+          icon: Icons.format_list_numbered_rounded,
+          label: 'Page #',
+          id: ToolRoutes.pageNumbers,
+        ),
       ],
     ),
   ];

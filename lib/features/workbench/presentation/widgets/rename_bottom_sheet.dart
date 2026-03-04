@@ -26,8 +26,7 @@ class _RenameBottomSheetState extends State<RenameBottomSheet> {
   @override
   void initState() {
     super.initState();
-    final nameWithoutExt =
-        widget.currentName.replaceAll(RegExp(r'\.pdf$'), '');
+    final nameWithoutExt = widget.currentName.replaceAll(RegExp(r'\.pdf$'), '');
     _controller = TextEditingController(text: nameWithoutExt);
   }
 

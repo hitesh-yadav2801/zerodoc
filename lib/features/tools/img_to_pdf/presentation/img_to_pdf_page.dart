@@ -9,6 +9,7 @@ import 'package:uuid/uuid.dart';
 import 'package:zerodoc/core/constants/app_spacing.dart';
 import 'package:zerodoc/core/theme/app_colors.dart';
 import 'package:zerodoc/core/theme/app_typography.dart';
+import 'package:zerodoc/features/tools/presentation/utils/desk_integration_helper.dart';
 import 'package:zerodoc/shared/providers/file_service_provider.dart';
 import 'package:zerodoc/shared/providers/pdf_edit_service_provider.dart';
 import 'package:zerodoc/shared/widgets/app_snackbar.dart';
@@ -56,13 +57,22 @@ class _ImgToPdfPageState extends ConsumerState<ImgToPdfPage> {
       final outputFile = File('${dir.path}/$outputName');
       await outputFile.writeAsBytes(outputBytes);
 
+      await DeskIntegrationHelper.handleOutput(
+        ref: ref,
+        outputFile: outputFile,
+        inputs: [], // No inputs came from the Desk
+      );
+
       if (!mounted) return;
 
-      await context.push('/result', extra: {
-        'outputPath': outputFile.path,
-        'fileName': outputName,
-        'showOpenInWorkbench': true,
-      });
+      await context.push(
+        '/result',
+        extra: {
+          'outputPath': outputFile.path,
+          'fileName': outputName,
+          'showOpenInWorkbench': true,
+        },
+      );
     } on Exception catch (e) {
       if (mounted) {
         AppSnackBar.show(

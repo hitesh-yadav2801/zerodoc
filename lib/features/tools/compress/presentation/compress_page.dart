@@ -10,16 +10,19 @@ import 'package:zerodoc/core/constants/app_spacing.dart';
 import 'package:zerodoc/core/constants/compression_level.dart';
 import 'package:zerodoc/core/theme/app_colors.dart';
 import 'package:zerodoc/core/theme/app_typography.dart';
+import 'package:zerodoc/features/home/domain/entities/desk_file.dart';
+import 'package:zerodoc/features/home/presentation/widgets/file_source_bottom_sheet.dart';
+import 'package:zerodoc/features/tools/domain/models/picked_file.dart';
+import 'package:zerodoc/features/tools/presentation/utils/desk_integration_helper.dart';
 import 'package:zerodoc/shared/providers/default_compression_provider.dart';
 import 'package:zerodoc/shared/providers/file_service_provider.dart';
+import 'package:zerodoc/shared/services/file_service.dart';
 import 'package:zerodoc/shared/providers/pdf_edit_service_provider.dart';
 import 'package:zerodoc/shared/providers/pdf_service_provider.dart';
-import 'package:zerodoc/shared/services/file_service.dart';
 import 'package:zerodoc/shared/widgets/app_snackbar.dart';
 import 'package:zerodoc/shared/widgets/file_drop_zone.dart';
 import 'package:zerodoc/shared/widgets/imported_file_card.dart';
 import 'package:zerodoc/shared/widgets/tool_screen_shell.dart';
-
 
 class CompressPage extends ConsumerStatefulWidget {
   const CompressPage({super.key});
@@ -29,18 +32,15 @@ class CompressPage extends ConsumerStatefulWidget {
 }
 
 class _CompressPageState extends ConsumerState<CompressPage> {
-  File? _file;
-  String? _fileName;
-  int? _pageCount;
-  int? _sizeBytes;
+  PickedFile? _file;
   late CompressionLevel _level;
   bool _isProcessing = false;
 
   int get _jpegQuality => switch (_level) {
-        CompressionLevel.low => 80,
-        CompressionLevel.medium => 50,
-        CompressionLevel.high => 25,
-      };
+    CompressionLevel.low => 80,
+    CompressionLevel.medium => 50,
+    CompressionLevel.high => 25,
+  };
 
   @override
   void initState() {
@@ -49,28 +49,53 @@ class _CompressPageState extends ConsumerState<CompressPage> {
   }
 
   Future<void> _pickFile() async {
+    await FileSourceBottomSheet.show(
+      context,
+      onPickFromDevice: _pickFromDevice,
+      onPickFromDesk: _pickFromDesk,
+    );
+  }
+
+  Future<void> _pickFromDevice() async {
     final fileService = ref.read(fileServiceProvider);
     final picked = await fileService.pickPdf();
     if (picked == null) return;
 
     final pdfService = ref.read(pdfServiceProvider);
     final count = await pdfService.getPageCount(picked.path);
-    final stat = picked.statSync();
 
     setState(() {
-      _file = picked;
-      _fileName = picked.uri.pathSegments.last;
-      _pageCount = count;
-      _sizeBytes = stat.size;
+      _file = PickedFile(
+        file: picked,
+        name: picked.uri.pathSegments.last,
+        pageCount: count,
+      );
+    });
+  }
+
+  Future<void> _pickFromDesk() async {
+    final selected = await context.push<List<DeskFile>>(
+      '/desk-selection',
+      // allowMultiple defaults to false
+    );
+
+    if (selected == null || selected.isEmpty) return;
+
+    final deskFile = selected.first;
+
+    setState(() {
+      _file = PickedFile(
+        file: File(deskFile.path),
+        name: deskFile.name,
+        deskFile: deskFile,
+        pageCount: deskFile.pageCount,
+      );
     });
   }
 
   void _removeFile() {
     setState(() {
       _file = null;
-      _fileName = null;
-      _pageCount = null;
-      _sizeBytes = null;
     });
   }
 
@@ -83,7 +108,7 @@ class _CompressPageState extends ConsumerState<CompressPage> {
       final pdfEditService = ref.read(pdfEditServiceProvider);
 
       final rendered = await pdfService.renderAllPagesForCompress(
-        _file!.path,
+        _file!.file.path,
         quality: _jpegQuality,
       );
 
@@ -99,26 +124,35 @@ class _CompressPageState extends ConsumerState<CompressPage> {
       if (images.isEmpty) throw Exception('No pages could be rendered');
 
       final outputBytes = await pdfEditService.compressViaRasterize(
-        _file!.path,
+        _file!.file.path,
         images,
         sizes,
       );
 
       final dir = await getApplicationDocumentsDirectory();
       const uuid = Uuid();
-      final baseName = _fileName?.replaceAll(RegExp(r'\.pdf$'), '') ?? 'file';
+      final baseName = _file?.name.replaceAll(RegExp(r'\.pdf$'), '') ?? 'file';
       final outputName =
           '${baseName}_compressed_${uuid.v4().substring(0, 8)}.pdf';
       final outputFile = File('${dir.path}/$outputName');
       await outputFile.writeAsBytes(outputBytes);
 
+      await DeskIntegrationHelper.handleOutput(
+        ref: ref,
+        outputFile: outputFile,
+        inputs: [_file!],
+      );
+
       if (!mounted) return;
 
-      await context.push('/result', extra: {
-        'outputPath': outputFile.path,
-        'fileName': outputName,
-        'showOpenInWorkbench': false,
-      });
+      await context.push(
+        '/result',
+        extra: {
+          'outputPath': outputFile.path,
+          'fileName': outputName,
+          'showOpenInWorkbench': false,
+        },
+      );
     } on Exception catch (e) {
       if (mounted) {
         AppSnackBar.show(
@@ -148,9 +182,9 @@ class _CompressPageState extends ConsumerState<CompressPage> {
   Widget _buildFileSection() {
     if (_file != null) {
       return ImportedFileCard(
-        fileName: _fileName ?? '',
-        pageCount: _pageCount,
-        sizeBytes: _sizeBytes,
+        fileName: _file!.name,
+        pageCount: _file!.pageCount,
+        sizeBytes: _file!.file.lengthSync(),
         onRemove: _removeFile,
       );
     }
@@ -203,11 +237,11 @@ class _CompressPageState extends ConsumerState<CompressPage> {
               ),
             ),
           ),
-          if (_sizeBytes != null)
+          if (_file != null)
             Padding(
               padding: const EdgeInsets.only(top: 12),
               child: Text(
-                'Original size: ${FileService.formatFileSize(_sizeBytes!)}',
+                'Original size: ${FileService.formatFileSize(_file!.file.lengthSync())}',
                 style: AppTypography.caption(color: c.inkMuted),
               ),
             ),
@@ -215,5 +249,4 @@ class _CompressPageState extends ConsumerState<CompressPage> {
       ),
     );
   }
-
 }

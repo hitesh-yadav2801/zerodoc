@@ -8,8 +8,8 @@ import 'package:zerodoc/shared/providers/shared_preferences_provider.dart';
 /// Defaults to [CompressionLevel.medium]. Persisted via SharedPreferences.
 final defaultCompressionProvider =
     NotifierProvider<DefaultCompressionNotifier, CompressionLevel>(
-  DefaultCompressionNotifier.new,
-);
+      DefaultCompressionNotifier.new,
+    );
 
 class DefaultCompressionNotifier extends Notifier<CompressionLevel> {
   static const _key = 'default_compression';

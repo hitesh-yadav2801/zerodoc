@@ -32,7 +32,6 @@ abstract final class AppSpacing {
   static const double iconXxl = 48;
 
   // Page padding
-  static const EdgeInsets pagePadding =
-      EdgeInsets.symmetric(horizontal: lg);
+  static const EdgeInsets pagePadding = EdgeInsets.symmetric(horizontal: lg);
   static const EdgeInsets cardPadding = EdgeInsets.all(lg);
 }

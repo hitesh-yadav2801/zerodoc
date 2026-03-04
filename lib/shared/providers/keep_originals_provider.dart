@@ -5,8 +5,9 @@ import 'package:zerodoc/shared/providers/shared_preferences_provider.dart';
 /// Whether to keep original files after processing.
 ///
 /// Defaults to `true`. Persisted via SharedPreferences.
-final keepOriginalsProvider =
-    NotifierProvider<KeepOriginalsNotifier, bool>(KeepOriginalsNotifier.new);
+final keepOriginalsProvider = NotifierProvider<KeepOriginalsNotifier, bool>(
+  KeepOriginalsNotifier.new,
+);
 
 class KeepOriginalsNotifier extends Notifier<bool> {
   static const _key = 'keep_originals';

@@ -8,13 +8,11 @@ class IntentHandler {
   StreamSubscription<List<SharedMediaFile>>? _subscription;
 
   void init() {
-    ReceiveSharingIntent.instance
-        .getInitialMedia()
-        .then(_handleSharedFiles);
+    ReceiveSharingIntent.instance.getInitialMedia().then(_handleSharedFiles);
 
-    _subscription = ReceiveSharingIntent.instance
-        .getMediaStream()
-        .listen(_handleSharedFiles);
+    _subscription = ReceiveSharingIntent.instance.getMediaStream().listen(
+      _handleSharedFiles,
+    );
   }
 
   void _handleSharedFiles(List<SharedMediaFile> files) {
@@ -30,10 +28,13 @@ class IntentHandler {
 
     log.i('Received shared PDF: $fileName');
 
-    AppRouter.router.push('/workbench', extra: {
-      'filePath': filePath,
-      'fileName': fileName,
-    });
+    AppRouter.router.push(
+      '/workbench',
+      extra: {
+        'filePath': filePath,
+        'fileName': fileName,
+      },
+    );
   }
 
   void dispose() {

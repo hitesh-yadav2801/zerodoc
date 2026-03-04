@@ -19,8 +19,8 @@ abstract final class AppSnackBar {
     final dotColor = isError
         ? c.terracotta
         : isSuccess
-            ? c.sage
-            : null;
+        ? c.sage
+        : null;
 
     final messenger = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
     final controller = messenger.showSnackBar(

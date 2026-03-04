@@ -25,8 +25,9 @@ class _SecondaryButtonState extends State<SecondaryButton> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown:
-          widget.isEnabled ? (_) => setState(() => _pressed = true) : null,
+      onTapDown: widget.isEnabled
+          ? (_) => setState(() => _pressed = true)
+          : null,
       onTapUp: widget.isEnabled
           ? (_) {
               setState(() => _pressed = false);

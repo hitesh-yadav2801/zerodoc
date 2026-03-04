@@ -40,7 +40,9 @@ class PageThumbnailTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: c.paperWhite,
           borderRadius: BorderRadius.circular(AppSpacing.thumbnailRadius),
-          boxShadow: pageState.isSelected ? AppShadows.md(context) : AppShadows.sm(context),
+          boxShadow: pageState.isSelected
+              ? AppShadows.md(context)
+              : AppShadows.sm(context),
           border: pageState.isSelected
               ? Border.all(color: c.slate, width: 2.5)
               : null,

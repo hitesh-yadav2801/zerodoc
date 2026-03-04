@@ -8,6 +8,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:zerodoc/core/theme/app_colors.dart';
 import 'package:zerodoc/core/theme/app_typography.dart';
+import 'package:zerodoc/features/home/domain/entities/desk_file.dart';
+import 'package:zerodoc/features/home/presentation/widgets/file_source_bottom_sheet.dart';
+import 'package:zerodoc/features/tools/domain/models/picked_file.dart';
+import 'package:zerodoc/features/tools/presentation/utils/desk_integration_helper.dart';
 import 'package:zerodoc/shared/providers/file_service_provider.dart';
 import 'package:zerodoc/shared/providers/pdf_edit_service_provider.dart';
 import 'package:zerodoc/shared/providers/pdf_service_provider.dart';
@@ -15,13 +19,6 @@ import 'package:zerodoc/shared/widgets/app_snackbar.dart';
 import 'package:zerodoc/shared/widgets/file_drop_zone.dart';
 import 'package:zerodoc/shared/widgets/imported_file_card.dart';
 import 'package:zerodoc/shared/widgets/tool_screen_shell.dart';
-
-class _PickedFile {
-  const _PickedFile({required this.file, required this.name, this.pageCount});
-  final File file;
-  final String name;
-  final int? pageCount;
-}
 
 class MergePage extends ConsumerStatefulWidget {
   const MergePage({super.key});
@@ -31,23 +28,57 @@ class MergePage extends ConsumerStatefulWidget {
 }
 
 class _MergePageState extends ConsumerState<MergePage> {
-  final _files = <_PickedFile>[];
+  final _files = <PickedFile>[];
   bool _isProcessing = false;
 
   Future<void> _pickFile() async {
+    await FileSourceBottomSheet.show(
+      context,
+      onPickFromDevice: _pickFromDevice,
+      onPickFromDesk: _pickFromDesk,
+    );
+  }
+
+  Future<void> _pickFromDevice() async {
     final fileService = ref.read(fileServiceProvider);
-    final picked = await fileService.pickPdf();
-    if (picked == null) return;
+    final pickedFiles = await fileService.pickMultiplePdfs();
+    if (pickedFiles.isEmpty) return;
 
     final pdfService = ref.read(pdfServiceProvider);
-    final pageCount = await pdfService.getPageCount(picked.path);
+
+    for (final file in pickedFiles) {
+      final pageCount = await pdfService.getPageCount(file.path);
+      setState(() {
+        _files.add(
+          PickedFile(
+            file: file,
+            name: file.uri.pathSegments.last,
+            pageCount: pageCount,
+          ),
+        );
+      });
+    }
+  }
+
+  Future<void> _pickFromDesk() async {
+    final selected = await context.push<List<DeskFile>>(
+      '/desk-selection',
+      extra: {'allowMultiple': true},
+    );
+
+    if (selected == null || selected.isEmpty) return;
 
     setState(() {
-      _files.add(_PickedFile(
-        file: picked,
-        name: picked.uri.pathSegments.last,
-        pageCount: pageCount,
-      ));
+      for (final deskFile in selected) {
+        _files.add(
+          PickedFile(
+            file: File(deskFile.path),
+            name: deskFile.name,
+            deskFile: deskFile,
+            pageCount: deskFile.pageCount,
+          ),
+        );
+      }
     });
   }
 
@@ -74,13 +105,22 @@ class _MergePageState extends ConsumerState<MergePage> {
       final outputFile = File('${dir.path}/$outputName');
       await outputFile.writeAsBytes(outputBytes);
 
+      await DeskIntegrationHelper.handleOutput(
+        ref: ref,
+        outputFile: outputFile,
+        inputs: _files,
+      );
+
       if (!mounted) return;
 
-      await context.push('/result', extra: {
-        'outputPath': outputFile.path,
-        'fileName': outputName,
-        'showOpenInWorkbench': true,
-      });
+      await context.push(
+        '/result',
+        extra: {
+          'outputPath': outputFile.path,
+          'fileName': outputName,
+          'showOpenInWorkbench': true,
+        },
+      );
     } on Exception catch (e) {
       if (mounted) {
         AppSnackBar.show(context, message: 'Merge failed: $e', isError: true);

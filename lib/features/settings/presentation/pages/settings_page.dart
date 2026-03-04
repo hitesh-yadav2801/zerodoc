@@ -217,73 +217,14 @@ class SettingsPage extends ConsumerWidget {
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
-      builder: (sheetContext) {
-        final sc = AppColors.of(sheetContext);
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 36,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: sc.inkMuted.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Default compression',
-                  style: AppTypography.sectionHeader(color: sc.ink),
-                ),
-                const SizedBox(height: 16),
-                for (final level in CompressionLevel.values)
-                  _ThemeOption(
-                    label: _compressionLabel(level),
-                    icon: _compressionIcon(level),
-                    isSelected: level == current,
-                    onTap: () {
-                      unawaited(
-                        ref.read(defaultCompressionProvider.notifier).setLevel(level),
-                      );
-                      Navigator.pop(sheetContext);
-                    },
-                  ),
-              ],
-            ),
-          ),
-        );
-      },
-    ));
-  }
-
-  void _showPrivacyPolicy(BuildContext context) {
-    final c = AppColors.of(context);
-    unawaited(
-      showModalBottomSheet<void>(
-        context: context,
-        backgroundColor: c.paperCard,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (sheetContext) {
-        final sc = AppColors.of(sheetContext);
-        return DraggableScrollableSheet(
-          initialChildSize: 0.6,
-          maxChildSize: 0.9,
-          minChildSize: 0.4,
-          expand: false,
-          builder: (context, scrollController) => SafeArea(
+        builder: (sheetContext) {
+          final sc = AppColors.of(sheetContext);
+          return SafeArea(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
                     child: Container(
@@ -296,22 +237,85 @@ class SettingsPage extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      controller: scrollController,
-                      child: Text(
-                        AppStrings.privacyPolicy,
-                        style: AppTypography.body(color: sc.ink),
-                      ),
-                    ),
+                  Text(
+                    'Default compression',
+                    style: AppTypography.sectionHeader(color: sc.ink),
                   ),
+                  const SizedBox(height: 16),
+                  for (final level in CompressionLevel.values)
+                    _ThemeOption(
+                      label: _compressionLabel(level),
+                      icon: _compressionIcon(level),
+                      isSelected: level == current,
+                      onTap: () {
+                        unawaited(
+                          ref
+                              .read(defaultCompressionProvider.notifier)
+                              .setLevel(level),
+                        );
+                        Navigator.pop(sheetContext);
+                      },
+                    ),
                 ],
               ),
             ),
-          ),
-        );
-      },
-    ));
+          );
+        },
+      ),
+    );
+  }
+
+  void _showPrivacyPolicy(BuildContext context) {
+    final c = AppColors.of(context);
+    unawaited(
+      showModalBottomSheet<void>(
+        context: context,
+        backgroundColor: c.paperCard,
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        builder: (sheetContext) {
+          final sc = AppColors.of(sheetContext);
+          return DraggableScrollableSheet(
+            initialChildSize: 0.6,
+            maxChildSize: 0.9,
+            minChildSize: 0.4,
+            expand: false,
+            builder: (context, scrollController) => SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 36,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: sc.inkMuted.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        controller: scrollController,
+                        child: Text(
+                          AppStrings.privacyPolicy,
+                          style: AppTypography.body(color: sc.ink),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   void _confirmClearFiles(BuildContext context, WidgetRef ref) {
@@ -320,37 +324,38 @@ class SettingsPage extends ConsumerWidget {
       showDialog<void>(
         context: context,
         builder: (dialogContext) => AlertDialog(
-        backgroundColor: c.paperCard,
-        title: Text(
-          'Clear all files?',
-          style: AppTypography.sectionHeader(color: c.ink),
-        ),
-        content: Text(
-          'This will permanently delete all processed files from this '
-          'device. This action cannot be undone.',
-          style: AppTypography.body(color: c.inkMuted),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(
-              'Cancel',
-              style: AppTypography.label(color: c.inkMuted),
-            ),
+          backgroundColor: c.paperCard,
+          title: Text(
+            'Clear all files?',
+            style: AppTypography.sectionHeader(color: c.ink),
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              unawaited(_performClear(context, ref));
-            },
-            child: Text(
-              'Clear',
-              style: AppTypography.label(color: c.terracotta),
-            ),
+          content: Text(
+            'This will permanently delete all processed files from this '
+            'device. This action cannot be undone.',
+            style: AppTypography.body(color: c.inkMuted),
           ),
-        ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(
+                'Cancel',
+                style: AppTypography.label(color: c.inkMuted),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                unawaited(_performClear(context, ref));
+              },
+              child: Text(
+                'Clear',
+                style: AppTypography.label(color: c.terracotta),
+              ),
+            ),
+          ],
+        ),
       ),
-    ));
+    );
   }
 
   Future<void> _performClear(BuildContext context, WidgetRef ref) async {
@@ -376,53 +381,52 @@ class SettingsPage extends ConsumerWidget {
     unawaited(
       showModalBottomSheet<void>(
         context: context,
-      backgroundColor: c.paperCard,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (sheetContext) {
-        final sc = AppColors.of(sheetContext);
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 36,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: sc.inkMuted.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(2),
+        backgroundColor: c.paperCard,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        builder: (sheetContext) {
+          final sc = AppColors.of(sheetContext);
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 36,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: sc.inkMuted.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'App theme',
-                  style: AppTypography.sectionHeader(color: sc.ink),
-                ),
-                const SizedBox(height: 16),
-                for (final mode in ThemeMode.values)
-                  _ThemeOption(
-                    label: _themeModeLabel(mode),
-                    icon: _themeModeIcon(mode),
-                    isSelected: mode == current,
-                    onTap: () {
-                      ref
-                          .read(themeModeProvider.notifier)
-                          .setThemeMode(mode);
-                      Navigator.pop(sheetContext);
-                    },
+                  const SizedBox(height: 16),
+                  Text(
+                    'App theme',
+                    style: AppTypography.sectionHeader(color: sc.ink),
                   ),
-              ],
+                  const SizedBox(height: 16),
+                  for (final mode in ThemeMode.values)
+                    _ThemeOption(
+                      label: _themeModeLabel(mode),
+                      icon: _themeModeIcon(mode),
+                      isSelected: mode == current,
+                      onTap: () {
+                        ref.read(themeModeProvider.notifier).setThemeMode(mode);
+                        Navigator.pop(sheetContext);
+                      },
+                    ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
-    ));
+          );
+        },
+      ),
+    );
   }
 
   static IconData _themeModeIcon(ThemeMode mode) {
@@ -470,8 +474,7 @@ class _ThemeOption extends StatelessWidget {
                 ),
               ),
             ),
-            if (isSelected)
-              Icon(Icons.check_rounded, color: c.slate, size: 22),
+            if (isSelected) Icon(Icons.check_rounded, color: c.slate, size: 22),
           ],
         ),
       ),

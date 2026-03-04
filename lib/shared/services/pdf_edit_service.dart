@@ -26,8 +26,7 @@ class PdfEditService {
         ..size = Size(newWidth, newHeight)
         ..margins.all = 0;
       final newPage = result.pages.add();
-      final graphics = newPage.graphics
-        ..save();
+      final graphics = newPage.graphics..save();
 
       switch (page.rotation) {
         case 90:

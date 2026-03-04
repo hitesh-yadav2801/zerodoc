@@ -8,6 +8,10 @@ import 'package:uuid/uuid.dart';
 import 'package:zerodoc/core/constants/app_spacing.dart';
 import 'package:zerodoc/core/theme/app_colors.dart';
 import 'package:zerodoc/core/theme/app_typography.dart';
+import 'package:zerodoc/features/home/domain/entities/desk_file.dart';
+import 'package:zerodoc/features/home/presentation/widgets/file_source_bottom_sheet.dart';
+import 'package:zerodoc/features/tools/domain/models/picked_file.dart';
+import 'package:zerodoc/features/tools/presentation/utils/desk_integration_helper.dart';
 import 'package:zerodoc/shared/providers/file_service_provider.dart';
 import 'package:zerodoc/shared/providers/pdf_edit_service_provider.dart';
 import 'package:zerodoc/shared/widgets/app_snackbar.dart';
@@ -23,8 +27,7 @@ class EncryptPage extends ConsumerStatefulWidget {
 }
 
 class _EncryptPageState extends ConsumerState<EncryptPage> {
-  File? _file;
-  String? _fileName;
+  PickedFile? _file;
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
   bool _obscurePassword = true;
@@ -36,20 +39,48 @@ class _EncryptPageState extends ConsumerState<EncryptPage> {
       _passwordController.text == _confirmController.text;
 
   Future<void> _pickFile() async {
+    await FileSourceBottomSheet.show(
+      context,
+      onPickFromDevice: _pickFromDevice,
+      onPickFromDesk: _pickFromDesk,
+    );
+  }
+
+  Future<void> _pickFromDevice() async {
     final fileService = ref.read(fileServiceProvider);
     final picked = await fileService.pickPdf();
     if (picked == null) return;
 
     setState(() {
-      _file = picked;
-      _fileName = picked.uri.pathSegments.last;
+      _file = PickedFile(
+        file: picked,
+        name: picked.uri.pathSegments.last,
+      );
+    });
+  }
+
+  Future<void> _pickFromDesk() async {
+    final selected = await context.push<List<DeskFile>>(
+      '/desk-selection',
+    );
+
+    if (selected == null || selected.isEmpty) return;
+
+    final deskFile = selected.first;
+
+    setState(() {
+      _file = PickedFile(
+        file: File(deskFile.path),
+        name: deskFile.name,
+        deskFile: deskFile,
+        pageCount: deskFile.pageCount,
+      );
     });
   }
 
   void _removeFile() {
     setState(() {
       _file = null;
-      _fileName = null;
     });
   }
 
@@ -59,7 +90,7 @@ class _EncryptPageState extends ConsumerState<EncryptPage> {
 
     try {
       final pdfEditService = ref.read(pdfEditServiceProvider);
-      final pdfBytes = await _file!.readAsBytes();
+      final pdfBytes = await _file!.file.readAsBytes();
       final outputBytes = await pdfEditService.encryptPdf(
         pdfBytes,
         _passwordController.text,
@@ -67,19 +98,28 @@ class _EncryptPageState extends ConsumerState<EncryptPage> {
 
       final dir = await getApplicationDocumentsDirectory();
       const uuid = Uuid();
-      final baseName = _fileName?.replaceAll(RegExp(r'\.pdf$'), '') ?? 'file';
+      final baseName = _file?.name.replaceAll(RegExp(r'\.pdf$'), '') ?? 'file';
       final outputName =
           '${baseName}_encrypted_${uuid.v4().substring(0, 8)}.pdf';
       final outputFile = File('${dir.path}/$outputName');
       await outputFile.writeAsBytes(outputBytes);
 
+      await DeskIntegrationHelper.handleOutput(
+        ref: ref,
+        outputFile: outputFile,
+        inputs: [_file!],
+      );
+
       if (!mounted) return;
 
-      await context.push('/result', extra: {
-        'outputPath': outputFile.path,
-        'fileName': outputName,
-        'showOpenInWorkbench': false,
-      });
+      await context.push(
+        '/result',
+        extra: {
+          'outputPath': outputFile.path,
+          'fileName': outputName,
+          'showOpenInWorkbench': false,
+        },
+      );
     } on Exception catch (e) {
       if (mounted) {
         AppSnackBar.show(
@@ -116,7 +156,7 @@ class _EncryptPageState extends ConsumerState<EncryptPage> {
   Widget _buildFileSection() {
     if (_file != null) {
       return ImportedFileCard(
-        fileName: _fileName ?? '',
+        fileName: _file!.name,
         onRemove: _removeFile,
       );
     }

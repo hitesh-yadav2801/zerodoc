@@ -42,8 +42,7 @@ abstract final class AppTypography {
       _fraunces(fontSize: 24, color: color);
 
   // DM Sans — everything else
-  static TextStyle body({Color? color}) =>
-      _dmSans(fontSize: 16, color: color);
+  static TextStyle body({Color? color}) => _dmSans(fontSize: 16, color: color);
 
   static TextStyle bodyMedium({Color? color}) =>
       _dmSans(fontSize: 15, fontWeight: FontWeight.w500, color: color);

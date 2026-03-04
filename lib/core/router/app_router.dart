@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:zerodoc/core/constants/tool_routes.dart';
 import 'package:zerodoc/core/router/app_shell.dart';
+import 'package:zerodoc/features/home/domain/entities/desk_file.dart';
+import 'package:zerodoc/features/home/presentation/pages/desk_selection_page.dart';
 import 'package:zerodoc/features/home/presentation/pages/home_page.dart';
 import 'package:zerodoc/features/result/presentation/pages/result_page.dart';
 import 'package:zerodoc/features/settings/presentation/pages/settings_page.dart';
@@ -52,11 +54,12 @@ abstract final class AppRouter {
         path: '/workbench',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: (context, state) {
-          final extra = state.extra! as Map<String, String>;
+          final extra = state.extra! as Map<String, dynamic>;
           return MaterialPage(
             child: WorkbenchPage(
-              filePath: extra['filePath']!,
-              fileName: extra['fileName']!,
+              filePath: extra['filePath']! as String,
+              fileName: extra['fileName']! as String,
+              deskFile: extra['deskFile'] as DeskFile?,
             ),
           );
         },
@@ -82,6 +85,18 @@ abstract final class AppRouter {
         pageBuilder: (context, state) {
           final toolId = state.pathParameters['toolId']!;
           return MaterialPage(child: _resolveToolPage(toolId));
+        },
+      ),
+      GoRoute(
+        path: '/desk-selection',
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          return MaterialPage(
+            child: DeskSelectionPage(
+              allowMultiple: extra['allowMultiple'] as bool? ?? false,
+            ),
+          );
         },
       ),
       ShellRoute(

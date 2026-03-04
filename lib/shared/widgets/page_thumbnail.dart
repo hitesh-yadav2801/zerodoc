@@ -34,15 +34,12 @@ class PageThumbnail extends StatelessWidget {
           boxShadow: isSelected
               ? AppShadows.md(context)
               : AppShadows.sm(context),
-          border: isSelected
-              ? Border.all(color: c.slate, width: 2.5)
-              : null,
+          border: isSelected ? Border.all(color: c.slate, width: 2.5) : null,
         ),
         child: Stack(
           children: [
             ClipRRect(
-              borderRadius:
-                  BorderRadius.circular(AppSpacing.thumbnailRadius),
+              borderRadius: BorderRadius.circular(AppSpacing.thumbnailRadius),
               child: imageBytes != null
                   ? Image.memory(
                       imageBytes!,

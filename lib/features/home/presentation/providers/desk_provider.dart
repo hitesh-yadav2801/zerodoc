@@ -22,8 +22,9 @@ final deskRepositoryProvider = Provider<DeskRepository>((ref) {
   );
 });
 
-final deskProvider =
-    AsyncNotifierProvider<DeskNotifier, List<DeskFile>>(DeskNotifier.new);
+final deskProvider = AsyncNotifierProvider<DeskNotifier, List<DeskFile>>(
+  DeskNotifier.new,
+);
 
 class DeskNotifier extends AsyncNotifier<List<DeskFile>> {
   DeskRepository get _repository => ref.read(deskRepositoryProvider);

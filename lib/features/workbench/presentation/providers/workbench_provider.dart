@@ -24,8 +24,12 @@ class WorkbenchState {
   final bool isReorderMode;
 
   bool get hasSelection => pages.any((p) => p.isSelected);
-  List<int> get selectedIndices =>
-      pages.asMap().entries.where((e) => e.value.isSelected).map((e) => e.key).toList();
+  List<int> get selectedIndices => pages
+      .asMap()
+      .entries
+      .where((e) => e.value.isSelected)
+      .map((e) => e.key)
+      .toList();
 
   WorkbenchState copyWith({
     String? filePath,
@@ -42,12 +46,19 @@ class WorkbenchState {
   }
 }
 
-final AsyncNotifierProviderFamily<WorkbenchNotifier, WorkbenchState,
-        ({String filePath, String fileName})> workbenchProvider =
-    AsyncNotifierProvider.family<WorkbenchNotifier, WorkbenchState,
-        ({String filePath, String fileName})>(
-  WorkbenchNotifier.new,
-);
+final AsyncNotifierProviderFamily<
+  WorkbenchNotifier,
+  WorkbenchState,
+  ({String filePath, String fileName})
+>
+workbenchProvider =
+    AsyncNotifierProvider.family<
+      WorkbenchNotifier,
+      WorkbenchState,
+      ({String filePath, String fileName})
+    >(
+      WorkbenchNotifier.new,
+    );
 
 class WorkbenchNotifier extends AsyncNotifier<WorkbenchState> {
   WorkbenchNotifier(this._arg);
@@ -76,8 +87,9 @@ class WorkbenchNotifier extends AsyncNotifier<WorkbenchState> {
     if (current == null) return;
 
     final updatedPages = List<PageState>.from(current.pages);
-    updatedPages[index] =
-        updatedPages[index].copyWith(isSelected: !updatedPages[index].isSelected);
+    updatedPages[index] = updatedPages[index].copyWith(
+      isSelected: !updatedPages[index].isSelected,
+    );
 
     state = AsyncData(current.copyWith(pages: updatedPages));
   }
@@ -183,8 +195,10 @@ class WorkbenchNotifier extends AsyncNotifier<WorkbenchState> {
     try {
       final pdfEditService = ref.read(pdfEditServiceProvider);
       final originalBytes = await File(current.filePath).readAsBytes();
-      final outputBytes =
-          await pdfEditService.applyChanges(originalBytes, current.pages);
+      final outputBytes = await pdfEditService.applyChanges(
+        originalBytes,
+        current.pages,
+      );
 
       final tempFile = File(
         '${File(current.filePath).parent.path}/${current.fileName}',
@@ -211,11 +225,12 @@ class WorkbenchNotifier extends AsyncNotifier<WorkbenchState> {
       final pdfEditService = ref.read(pdfEditServiceProvider);
       final originalBytes = await File(current.filePath).readAsBytes();
       final indices = selected.map((p) => p.originalIndex).toList();
-      final outputBytes =
-          await pdfEditService.extractPages(originalBytes, indices);
+      final outputBytes = await pdfEditService.extractPages(
+        originalBytes,
+        indices,
+      );
 
-      final baseName =
-          current.fileName.replaceAll(RegExp(r'\.pdf$'), '');
+      final baseName = current.fileName.replaceAll(RegExp(r'\.pdf$'), '');
       final extractName = '${baseName}_extract.pdf';
       final tempFile = File(
         '${File(current.filePath).parent.path}/$extractName',

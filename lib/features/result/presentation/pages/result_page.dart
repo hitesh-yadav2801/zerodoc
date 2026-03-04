@@ -23,15 +23,21 @@ class ResultPage extends StatelessWidget {
 
   Future<void> _onSave(BuildContext context) async {
     try {
+      final file = File(outputPath);
+      final bytes = await file.readAsBytes();
       final result = await FilePicker.platform.saveFile(
         dialogTitle: 'Save PDF',
         fileName: fileName,
         type: FileType.custom,
         allowedExtensions: ['pdf'],
+        bytes: bytes,
       );
 
       if (result != null && context.mounted) {
-        await File(outputPath).copy(result);
+        if (!Platform.isAndroid && !Platform.isIOS) {
+          // Additional fallback for desktop platforms if needed
+          await file.copy(result);
+        }
         if (context.mounted) {
           AppSnackBar.show(context, message: 'Saved!', isSuccess: true);
         }
@@ -92,8 +98,9 @@ class ResultPage extends StatelessWidget {
                   fileName: fileName,
                   onSave: () => _onSave(context),
                   onShare: () => _onShare(context),
-                  onOpenInWorkbench:
-                      showOpenInWorkbench ? () => _onOpenInWorkbench(context) : null,
+                  onOpenInWorkbench: showOpenInWorkbench
+                      ? () => _onOpenInWorkbench(context)
+                      : null,
                 ),
               ),
             ),

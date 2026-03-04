@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -9,6 +10,10 @@ import 'package:uuid/uuid.dart';
 import 'package:zerodoc/core/constants/app_spacing.dart';
 import 'package:zerodoc/core/theme/app_colors.dart';
 import 'package:zerodoc/core/theme/app_typography.dart';
+import 'package:zerodoc/features/home/domain/entities/desk_file.dart';
+import 'package:zerodoc/features/home/presentation/widgets/file_source_bottom_sheet.dart';
+import 'package:zerodoc/features/tools/domain/models/picked_file.dart';
+import 'package:zerodoc/features/tools/presentation/utils/desk_integration_helper.dart';
 import 'package:zerodoc/shared/providers/file_service_provider.dart';
 import 'package:zerodoc/shared/providers/pdf_edit_service_provider.dart';
 import 'package:zerodoc/shared/providers/pdf_service_provider.dart';
@@ -25,13 +30,20 @@ class SplitPage extends ConsumerStatefulWidget {
 }
 
 class _SplitPageState extends ConsumerState<SplitPage> {
-  File? _file;
-  String? _fileName;
+  PickedFile? _file;
   List<Uint8List?> _thumbnails = [];
   final _selected = <int>{};
   bool _isProcessing = false;
 
   Future<void> _pickFile() async {
+    await FileSourceBottomSheet.show(
+      context,
+      onPickFromDevice: _pickFromDevice,
+      onPickFromDesk: _pickFromDesk,
+    );
+  }
+
+  Future<void> _pickFromDevice() async {
     final fileService = ref.read(fileServiceProvider);
     final picked = await fileService.pickPdf();
     if (picked == null) return;
@@ -40,8 +52,35 @@ class _SplitPageState extends ConsumerState<SplitPage> {
     final thumbs = await pdfService.renderAllPages(picked.path, width: 150);
 
     setState(() {
-      _file = picked;
-      _fileName = picked.uri.pathSegments.last;
+      _file = PickedFile(
+        file: picked,
+        name: picked.uri.pathSegments.last,
+        pageCount: thumbs.length,
+      );
+      _thumbnails = thumbs;
+      _selected.clear();
+    });
+  }
+
+  Future<void> _pickFromDesk() async {
+    final selected = await context.push<List<DeskFile>>(
+      '/desk-selection',
+      // allowMultiple defaults to false
+    );
+
+    if (selected == null || selected.isEmpty) return;
+
+    final deskFile = selected.first;
+    final pdfService = ref.read(pdfServiceProvider);
+    final thumbs = await pdfService.renderAllPages(deskFile.path, width: 150);
+
+    setState(() {
+      _file = PickedFile(
+        file: File(deskFile.path),
+        name: deskFile.name,
+        deskFile: deskFile,
+        pageCount: thumbs.length,
+      );
       _thumbnails = thumbs;
       _selected.clear();
     });
@@ -50,14 +89,13 @@ class _SplitPageState extends ConsumerState<SplitPage> {
   void _removeFile() {
     setState(() {
       _file = null;
-      _fileName = null;
       _thumbnails = [];
       _selected.clear();
     });
   }
 
   void _togglePage(int index) {
-    HapticFeedback.lightImpact();
+    unawaited(HapticFeedback.lightImpact());
     setState(() {
       if (_selected.contains(index)) {
         _selected.remove(index);
@@ -73,25 +111,36 @@ class _SplitPageState extends ConsumerState<SplitPage> {
 
     try {
       final pdfEditService = ref.read(pdfEditServiceProvider);
-      final pdfBytes = await _file!.readAsBytes();
+      final pdfBytes = await _file!.file.readAsBytes();
       final sortedIndices = _selected.toList()..sort();
-      final outputBytes =
-          await pdfEditService.extractPages(pdfBytes, sortedIndices);
+      final outputBytes = await pdfEditService.extractPages(
+        pdfBytes,
+        sortedIndices,
+      );
 
       final dir = await getApplicationDocumentsDirectory();
       const uuid = Uuid();
-      final baseName = _fileName?.replaceAll(RegExp(r'\.pdf$'), '') ?? 'split';
+      final baseName = _file?.name.replaceAll(RegExp(r'\.pdf$'), '') ?? 'split';
       final outputName = '${baseName}_split_${uuid.v4().substring(0, 8)}.pdf';
       final outputFile = File('${dir.path}/$outputName');
       await outputFile.writeAsBytes(outputBytes);
 
+      await DeskIntegrationHelper.handleOutput(
+        ref: ref,
+        outputFile: outputFile,
+        inputs: [_file!],
+      );
+
       if (!mounted) return;
 
-      await context.push('/result', extra: {
-        'outputPath': outputFile.path,
-        'fileName': outputName,
-        'showOpenInWorkbench': true,
-      });
+      await context.push(
+        '/result',
+        extra: {
+          'outputPath': outputFile.path,
+          'fileName': outputName,
+          'showOpenInWorkbench': true,
+        },
+      );
     } on Exception catch (e) {
       if (mounted) {
         AppSnackBar.show(context, message: 'Split failed: $e', isError: true);
@@ -106,8 +155,7 @@ class _SplitPageState extends ConsumerState<SplitPage> {
     return ToolScreenShell(
       title: 'Split PDF',
       fileSection: _buildFileSection(),
-      optionsSection:
-          _thumbnails.isNotEmpty ? _buildPageGrid() : null,
+      optionsSection: _thumbnails.isNotEmpty ? _buildPageGrid() : null,
       actionLabel: 'Split (${_selected.length} pages)',
       onAction: _selected.isNotEmpty ? _split : null,
       isActionEnabled: _selected.isNotEmpty,
@@ -118,7 +166,7 @@ class _SplitPageState extends ConsumerState<SplitPage> {
   Widget _buildFileSection() {
     if (_file != null) {
       return ImportedFileCard(
-        fileName: _fileName ?? '',
+        fileName: _file!.name,
         pageCount: _thumbnails.length,
         onRemove: _removeFile,
       );
@@ -178,8 +226,9 @@ class _SplitPageState extends ConsumerState<SplitPage> {
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
                   color: c.paperWhite,
-                  borderRadius:
-                      BorderRadius.circular(AppSpacing.thumbnailRadius),
+                  borderRadius: BorderRadius.circular(
+                    AppSpacing.thumbnailRadius,
+                  ),
                   border: isSelected
                       ? Border.all(color: c.slate, width: 2.5)
                       : null,
@@ -208,8 +257,10 @@ class _SplitPageState extends ConsumerState<SplitPage> {
                         )
                       else
                         Center(
-                          child: Icon(Icons.broken_image_rounded,
-                              color: c.inkMuted),
+                          child: Icon(
+                            Icons.broken_image_rounded,
+                            color: c.inkMuted,
+                          ),
                         ),
                       Positioned(
                         right: 4,
@@ -224,8 +275,7 @@ class _SplitPageState extends ConsumerState<SplitPage> {
                           alignment: Alignment.center,
                           child: Text(
                             '${index + 1}',
-                            style: AppTypography.pageBadge(
-                                color: c.inkMuted),
+                            style: AppTypography.pageBadge(color: c.inkMuted),
                           ),
                         ),
                       ),

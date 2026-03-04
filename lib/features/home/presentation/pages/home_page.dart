@@ -82,8 +82,7 @@ class HomePage extends ConsumerWidget {
                         'fileName': file.name,
                       },
                     ),
-                    onFileDelete: (file) =>
-                        _onFileDelete(context, ref, file),
+                    onFileDelete: (file) => _onFileDelete(context, ref, file),
                   ),
           ),
         ],
@@ -91,7 +90,11 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, WidgetRef ref, AppColorsResolved c) {
+  Widget _buildHeader(
+    BuildContext context,
+    WidgetRef ref,
+    AppColorsResolved c,
+  ) {
     return SliverPadding(
       padding: AppSpacing.pagePadding.copyWith(top: 24, bottom: 8),
       sliver: SliverToBoxAdapter(
@@ -144,7 +147,12 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildError(BuildContext context, WidgetRef ref, Object error, AppColorsResolved c) {
+  Widget _buildError(
+    BuildContext context,
+    WidgetRef ref,
+    Object error,
+    AppColorsResolved c,
+  ) {
     return SliverFillRemaining(
       hasScrollBody: false,
       child: Center(

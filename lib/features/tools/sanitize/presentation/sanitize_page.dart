@@ -8,6 +8,10 @@ import 'package:uuid/uuid.dart';
 import 'package:zerodoc/core/constants/app_spacing.dart';
 import 'package:zerodoc/core/theme/app_colors.dart';
 import 'package:zerodoc/core/theme/app_typography.dart';
+import 'package:zerodoc/features/home/domain/entities/desk_file.dart';
+import 'package:zerodoc/features/home/presentation/widgets/file_source_bottom_sheet.dart';
+import 'package:zerodoc/features/tools/domain/models/picked_file.dart';
+import 'package:zerodoc/features/tools/presentation/utils/desk_integration_helper.dart';
 import 'package:zerodoc/shared/providers/file_service_provider.dart';
 import 'package:zerodoc/shared/providers/pdf_edit_service_provider.dart';
 import 'package:zerodoc/shared/widgets/app_snackbar.dart';
@@ -23,25 +27,52 @@ class SanitizePage extends ConsumerStatefulWidget {
 }
 
 class _SanitizePageState extends ConsumerState<SanitizePage> {
-  File? _file;
-  String? _fileName;
+  PickedFile? _file;
   bool _isProcessing = false;
 
   Future<void> _pickFile() async {
+    await FileSourceBottomSheet.show(
+      context,
+      onPickFromDevice: _pickFromDevice,
+      onPickFromDesk: _pickFromDesk,
+    );
+  }
+
+  Future<void> _pickFromDevice() async {
     final fileService = ref.read(fileServiceProvider);
     final picked = await fileService.pickPdf();
     if (picked == null) return;
 
     setState(() {
-      _file = picked;
-      _fileName = picked.uri.pathSegments.last;
+      _file = PickedFile(
+        file: picked,
+        name: picked.uri.pathSegments.last,
+      );
+    });
+  }
+
+  Future<void> _pickFromDesk() async {
+    final selected = await context.push<List<DeskFile>>(
+      '/desk-selection',
+    );
+
+    if (selected == null || selected.isEmpty) return;
+
+    final deskFile = selected.first;
+
+    setState(() {
+      _file = PickedFile(
+        file: File(deskFile.path),
+        name: deskFile.name,
+        deskFile: deskFile,
+        pageCount: deskFile.pageCount,
+      );
     });
   }
 
   void _removeFile() {
     setState(() {
       _file = null;
-      _fileName = null;
     });
   }
 
@@ -51,24 +82,33 @@ class _SanitizePageState extends ConsumerState<SanitizePage> {
 
     try {
       final pdfEditService = ref.read(pdfEditServiceProvider);
-      final pdfBytes = await _file!.readAsBytes();
+      final pdfBytes = await _file!.file.readAsBytes();
       final outputBytes = await pdfEditService.sanitizeMetadata(pdfBytes);
 
       final dir = await getApplicationDocumentsDirectory();
       const uuid = Uuid();
-      final baseName = _fileName?.replaceAll(RegExp(r'\.pdf$'), '') ?? 'file';
+      final baseName = _file?.name.replaceAll(RegExp(r'\.pdf$'), '') ?? 'file';
       final outputName =
           '${baseName}_sanitized_${uuid.v4().substring(0, 8)}.pdf';
       final outputFile = File('${dir.path}/$outputName');
       await outputFile.writeAsBytes(outputBytes);
 
+      await DeskIntegrationHelper.handleOutput(
+        ref: ref,
+        outputFile: outputFile,
+        inputs: [_file!],
+      );
+
       if (!mounted) return;
 
-      await context.push('/result', extra: {
-        'outputPath': outputFile.path,
-        'fileName': outputName,
-        'showOpenInWorkbench': false,
-      });
+      await context.push(
+        '/result',
+        extra: {
+          'outputPath': outputFile.path,
+          'fileName': outputName,
+          'showOpenInWorkbench': false,
+        },
+      );
     } on Exception catch (e) {
       if (mounted) {
         AppSnackBar.show(
@@ -98,7 +138,7 @@ class _SanitizePageState extends ConsumerState<SanitizePage> {
   Widget _buildFileSection() {
     if (_file != null) {
       return ImportedFileCard(
-        fileName: _fileName ?? '',
+        fileName: _file!.name,
         onRemove: _removeFile,
       );
     }
@@ -125,7 +165,10 @@ class _SanitizePageState extends ConsumerState<SanitizePage> {
           _infoRow(Icons.title_rounded, 'Title & Subject'),
           _infoRow(Icons.tag_rounded, 'Keywords'),
           _infoRow(Icons.code_rounded, 'Creator & Producer'),
-          _infoRow(Icons.calendar_today_rounded, 'Creation & Modification dates'),
+          _infoRow(
+            Icons.calendar_today_rounded,
+            'Creation & Modification dates',
+          ),
           const SizedBox(height: 12),
           Text(
             'The PDF content itself is not modified.',
