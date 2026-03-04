@@ -8,4 +8,5 @@ abstract class DeskRepository {
   Future<Either<Failure, List<DeskFile>>> getDeskFiles();
   Future<Either<Failure, DeskFile>> addFile(File file);
   Future<Either<Failure, Unit>> removeFile(String id);
+  Future<Either<Failure, Unit>> clearAll();
 }

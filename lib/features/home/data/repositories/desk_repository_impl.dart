@@ -99,4 +99,19 @@ class DeskRepositoryImpl implements DeskRepository {
       return const Left(Failure('Could not remove this file.'));
     }
   }
+
+  @override
+  Future<Either<Failure, Unit>> clearAll() async {
+    try {
+      final models = datasource.getAll();
+      for (final model in models) {
+        await fileService.deleteLocal(model.path);
+      }
+      await datasource.save([]);
+      return const Right(unit);
+    } on Exception catch (e, st) {
+      log.e('Failed to clear all desk files', error: e, stackTrace: st);
+      return const Left(Failure('Could not clear processed files.'));
+    }
+  }
 }

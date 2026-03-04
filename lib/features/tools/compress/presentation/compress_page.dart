@@ -7,8 +7,10 @@ import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:zerodoc/core/constants/app_spacing.dart';
+import 'package:zerodoc/core/constants/compression_level.dart';
 import 'package:zerodoc/core/theme/app_colors.dart';
 import 'package:zerodoc/core/theme/app_typography.dart';
+import 'package:zerodoc/shared/providers/default_compression_provider.dart';
 import 'package:zerodoc/shared/providers/file_service_provider.dart';
 import 'package:zerodoc/shared/providers/pdf_edit_service_provider.dart';
 import 'package:zerodoc/shared/providers/pdf_service_provider.dart';
@@ -18,7 +20,6 @@ import 'package:zerodoc/shared/widgets/file_drop_zone.dart';
 import 'package:zerodoc/shared/widgets/imported_file_card.dart';
 import 'package:zerodoc/shared/widgets/tool_screen_shell.dart';
 
-enum CompressionLevel { low, medium, high }
 
 class CompressPage extends ConsumerStatefulWidget {
   const CompressPage({super.key});
@@ -32,7 +33,7 @@ class _CompressPageState extends ConsumerState<CompressPage> {
   String? _fileName;
   int? _pageCount;
   int? _sizeBytes;
-  CompressionLevel _level = CompressionLevel.medium;
+  late CompressionLevel _level;
   bool _isProcessing = false;
 
   int get _jpegQuality => switch (_level) {
@@ -40,6 +41,12 @@ class _CompressPageState extends ConsumerState<CompressPage> {
         CompressionLevel.medium => 50,
         CompressionLevel.high => 25,
       };
+
+  @override
+  void initState() {
+    super.initState();
+    _level = ref.read(defaultCompressionProvider);
+  }
 
   Future<void> _pickFile() async {
     final fileService = ref.read(fileServiceProvider);

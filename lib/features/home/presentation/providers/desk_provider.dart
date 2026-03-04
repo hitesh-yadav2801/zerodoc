@@ -70,6 +70,28 @@ class DeskNotifier extends AsyncNotifier<List<DeskFile>> {
     );
   }
 
+  /// Removes a file from the desk list without deleting from disk.
+  /// Used for the swipe-to-delete flow where deletion is deferred.
+  DeskFile? softRemoveFile(String id) {
+    final current = state.value ?? [];
+    final file = current.where((f) => f.id == id).firstOrNull;
+    if (file == null) return null;
+
+    state = AsyncData(current.where((f) => f.id != id).toList());
+    return file;
+  }
+
+  /// Re-adds a soft-removed file back to the desk list.
+  void undoSoftRemove(DeskFile file) {
+    final current = state.value ?? [];
+    state = AsyncData([file, ...current]);
+  }
+
+  /// Actually deletes the file from disk after the undo window expires.
+  Future<void> confirmRemoveFile(String id) async {
+    await _repository.removeFile(id);
+  }
+
   Future<void> undoRemove(DeskFile file) async {
     final sourceFile = File(file.path);
     final result = await _repository.addFile(sourceFile);
@@ -89,6 +111,18 @@ class DeskNotifier extends AsyncNotifier<List<DeskFile>> {
       (deskFile) {
         final current = state.value ?? [];
         state = AsyncData([deskFile, ...current]);
+        return null;
+      },
+    );
+  }
+
+  /// Clears all files from the desk and deletes them from disk.
+  Future<Failure?> clearAll() async {
+    final result = await _repository.clearAll();
+    return result.fold(
+      (failure) => failure,
+      (_) {
+        state = const AsyncData([]);
         return null;
       },
     );
