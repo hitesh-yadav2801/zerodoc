@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 abstract final class AppTypography {
   static TextStyle _fraunces({
@@ -8,7 +7,8 @@ abstract final class AppTypography {
     double height = 1.2,
     Color? color,
   }) {
-    return GoogleFonts.fraunces(
+    return TextStyle(
+      fontFamily: 'Fraunces',
       fontSize: fontSize,
       fontWeight: fontWeight,
       height: height,
@@ -22,7 +22,8 @@ abstract final class AppTypography {
     double height = 1.5,
     Color? color,
   }) {
-    return GoogleFonts.dmSans(
+    return TextStyle(
+      fontFamily: 'DM Sans',
       fontSize: fontSize,
       fontWeight: fontWeight,
       height: height,

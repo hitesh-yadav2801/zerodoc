@@ -274,7 +274,7 @@ class WorkbenchPage extends ConsumerWidget {
     if (failure != null) {
       AppSnackBar.show(context, message: failure.message, isError: true);
     } else {
-      final wb = ref.read(workbenchProvider(_arg)).valueOrNull;
+      final wb = ref.read(workbenchProvider(_arg)).value;
       await context.push('/result', extra: {
         'outputPath': outputPath,
         'fileName': wb?.fileName ?? fileName,

@@ -46,7 +46,7 @@ class DeskNotifier extends AsyncNotifier<List<DeskFile>> {
     return result.fold(
       (failure) => failure,
       (deskFile) {
-        final current = state.valueOrNull ?? [];
+        final current = state.value ?? [];
         state = AsyncData([deskFile, ...current]);
         return null;
       },
@@ -54,7 +54,7 @@ class DeskNotifier extends AsyncNotifier<List<DeskFile>> {
   }
 
   Future<DeskFile?> removeFile(String id) async {
-    final current = state.valueOrNull ?? [];
+    final current = state.value ?? [];
     final file = current.where((f) => f.id == id).firstOrNull;
     if (file == null) return null;
 
@@ -76,7 +76,7 @@ class DeskNotifier extends AsyncNotifier<List<DeskFile>> {
     result.fold(
       (_) {},
       (restored) {
-        final current = state.valueOrNull ?? [];
+        final current = state.value ?? [];
         state = AsyncData([restored, ...current]);
       },
     );
@@ -87,7 +87,7 @@ class DeskNotifier extends AsyncNotifier<List<DeskFile>> {
     return result.fold(
       (failure) => failure,
       (deskFile) {
-        final current = state.valueOrNull ?? [];
+        final current = state.value ?? [];
         state = AsyncData([deskFile, ...current]);
         return null;
       },
