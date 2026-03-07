@@ -16,7 +16,14 @@ import 'package:zerodoc/shared/widgets/imported_file_card.dart';
 import 'package:zerodoc/shared/widgets/tool_screen_shell.dart';
 
 class UnlockPage extends ConsumerStatefulWidget {
-  const UnlockPage({super.key});
+  const UnlockPage({
+    super.key,
+    this.initialFilePath,
+    this.initialFileName,
+  });
+
+  final String? initialFilePath;
+  final String? initialFileName;
 
   @override
   ConsumerState<UnlockPage> createState() => _UnlockPageState();
@@ -28,6 +35,23 @@ class _UnlockPageState extends ConsumerState<UnlockPage> {
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _isProcessing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialFilePath != null && widget.initialFileName != null) {
+      _loadInitialFile();
+    }
+  }
+
+  Future<void> _loadInitialFile() async {
+    final f = File(widget.initialFilePath!);
+    if (!mounted) return;
+    setState(() {
+      _file = f;
+      _fileName = widget.initialFileName;
+    });
+  }
 
   bool get _canUnlock =>
       _file != null && _passwordController.text.isNotEmpty;

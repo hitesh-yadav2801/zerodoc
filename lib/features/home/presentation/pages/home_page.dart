@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,10 +5,7 @@ import 'package:zerodoc/core/constants/app_spacing.dart';
 import 'package:zerodoc/core/constants/app_strings.dart';
 import 'package:zerodoc/core/theme/app_colors.dart';
 import 'package:zerodoc/core/theme/app_typography.dart';
-import 'package:zerodoc/features/home/domain/entities/desk_file.dart';
-import 'package:zerodoc/features/home/presentation/providers/desk_provider.dart';
-import 'package:zerodoc/features/home/presentation/widgets/desk_file_list.dart';
-import 'package:zerodoc/shared/widgets/app_snackbar.dart';
+import 'package:zerodoc/shared/providers/file_service_provider.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -23,99 +18,115 @@ class HomePage extends ConsumerWidget {
   }
 
   Future<void> _onImport(BuildContext context, WidgetRef ref) async {
-    final failure = await ref.read(deskProvider.notifier).importFile();
-    if (failure != null && context.mounted) {
-      AppSnackBar.show(context, message: failure.message, isError: true);
+    final fileService = ref.read(fileServiceProvider);
+    final pickedFile = await fileService.pickPdf();
+    if (pickedFile != null && context.mounted) {
+      context.push(
+        '/workbench',
+        extra: {
+          'filePath': pickedFile.path,
+          'fileName': pickedFile.uri.pathSegments.last,
+        },
+      );
     }
-  }
-
-  void _onFileDelete(
-    BuildContext context,
-    WidgetRef ref,
-    DeskFile file,
-  ) {
-    final removed = ref.read(deskProvider.notifier).softRemoveFile(file.id);
-    if (removed == null) return;
-
-    var undone = false;
-
-    AppSnackBar.show(
-      context,
-      message: 'Removed ${removed.name}',
-      actionLabel: 'Undo',
-      duration: const Duration(seconds: 5),
-      onAction: () {
-        undone = true;
-        ref.read(deskProvider.notifier).undoSoftRemove(removed);
-      },
-      onDismissed: () {
-        if (!undone) {
-          unawaited(
-            ref.read(deskProvider.notifier).confirmRemoveFile(removed.id),
-          );
-        }
-      },
-    );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = AppColors.of(context);
-    final deskState = ref.watch(deskProvider);
 
-    return SafeArea(
-      child: CustomScrollView(
-        slivers: [
-          _buildHeader(context, ref, c),
-          _buildSectionTitle(c),
-          deskState.when(
-            loading: () => _buildLoading(c),
-            error: (error, _) => _buildError(context, ref, error, c),
-            data: (files) => files.isEmpty
-                ? _buildEmpty(c)
-                : DeskFileList(
-                    files: files,
-                    onFileTap: (file) => context.push(
-                      '/workbench',
-                      extra: {
-                        'filePath': file.path,
-                        'fileName': file.name,
-                      },
-                    ),
-                    onFileDelete: (file) =>
-                        _onFileDelete(context, ref, file),
-                  ),
+    return Scaffold(
+      backgroundColor: c.paperCard,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: AppSpacing.pagePadding.copyWith(top: 24, bottom: 48),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildAppBar(context, c),
+              const SizedBox(height: 48),
+              _buildImportButton(context, ref, c),
+              const SizedBox(height: 48),
+              _buildHistoryPlaceholder(context, c),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context, WidgetRef ref, AppColorsResolved c) {
-    return SliverPadding(
-      padding: AppSpacing.pagePadding.copyWith(top: 24, bottom: 8),
-      sliver: SliverToBoxAdapter(
+  Widget _buildAppBar(BuildContext context, AppColorsResolved c) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.dashboard_customize_rounded,
+                    size: 28,
+                    color: c.slate,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    AppStrings.appName,
+                    style: AppTypography.pageTitle(color: c.ink).copyWith(fontSize: 24),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                AppStrings.slogan,
+                style: AppTypography.caption(color: c.inkMuted),
+              ),
+            ],
+          ),
+        ),
+        Text(
+          _greeting,
+          style: AppTypography.body(color: c.inkMuted),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildImportButton(BuildContext context, WidgetRef ref, AppColorsResolved c) {
+    return InkWell(
+      onTap: () => _onImport(context, ref),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+        decoration: BoxDecoration(
+          color: c.sageTint,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: c.sage.withValues(alpha: 0.3), width: 1.5),
+        ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Icon(
+              Icons.add_circle_outline_rounded,
+              size: 32,
+              color: c.sage,
+            ),
+            const SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _greeting,
-                  style: AppTypography.pageTitle(color: c.ink),
+                  'Import PDF',
+                  style: AppTypography.sectionHeader(color: c.ink),
                 ),
-                const SizedBox(height: 2),
                 Text(
-                  AppStrings.slogan,
+                  'Select a document to edit',
                   style: AppTypography.caption(color: c.inkMuted),
                 ),
               ],
-            ),
-            FloatingActionButton.small(
-              heroTag: 'home_fab',
-              onPressed: () => _onImport(context, ref),
-              child: const Icon(Icons.add_rounded),
             ),
           ],
         ),
@@ -123,89 +134,31 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionTitle(AppColorsResolved c) {
-    return SliverPadding(
-      padding: AppSpacing.pagePadding.copyWith(top: 24),
-      sliver: SliverToBoxAdapter(
-        child: Text(
-          'On the Desk',
+  Widget _buildHistoryPlaceholder(BuildContext context, AppColorsResolved c) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Recent Files',
           style: AppTypography.sectionHeader(color: c.ink),
         ),
-      ),
-    );
-  }
-
-  Widget _buildLoading(AppColorsResolved c) {
-    return SliverFillRemaining(
-      hasScrollBody: false,
-      child: Center(
-        child: CircularProgressIndicator(color: c.slate),
-      ),
-    );
-  }
-
-  Widget _buildError(BuildContext context, WidgetRef ref, Object error, AppColorsResolved c) {
-    return SliverFillRemaining(
-      hasScrollBody: false,
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 100),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.error_outline_rounded,
-                size: 48,
-                color: c.terracotta.withValues(alpha: 0.6),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Text(
-                'Could not load your files.',
-                style: AppTypography.body(color: c.inkMuted),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              TextButton(
-                onPressed: () => ref.invalidate(deskProvider),
-                child: Text(
-                  'Retry',
-                  style: AppTypography.label(color: c.slate),
-                ),
-              ),
-            ],
+        const SizedBox(height: 16),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: c.paperCard,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: c.slate.withValues(alpha: 0.1), width: 1),
+          ),
+          child: Center(
+            child: Text(
+              'No recent files yet.',
+              style: AppTypography.body(color: c.inkMuted),
+            ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildEmpty(AppColorsResolved c) {
-    return SliverFillRemaining(
-      hasScrollBody: false,
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 100),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.description_outlined,
-                size: 64,
-                color: c.inkMuted.withValues(alpha: 0.4),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Text(
-                'Nothing on the desk yet.',
-                style: AppTypography.body(color: c.inkMuted),
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                'Tap + to import a document.',
-                style: AppTypography.caption(color: c.inkMuted),
-              ),
-            ],
-          ),
-        ),
-      ),
+      ],
     );
   }
 }

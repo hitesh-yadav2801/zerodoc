@@ -17,7 +17,14 @@ import 'package:zerodoc/shared/widgets/imported_file_card.dart';
 import 'package:zerodoc/shared/widgets/tool_screen_shell.dart';
 
 class PdfToImgPage extends ConsumerStatefulWidget {
-  const PdfToImgPage({super.key});
+  const PdfToImgPage({
+    super.key,
+    this.initialFilePath,
+    this.initialFileName,
+  });
+
+  final String? initialFilePath;
+  final String? initialFileName;
 
   @override
   ConsumerState<PdfToImgPage> createState() => _PdfToImgPageState();
@@ -29,6 +36,28 @@ class _PdfToImgPageState extends ConsumerState<PdfToImgPage> {
   List<Uint8List?> _thumbnails = [];
   final _selected = <int>{};
   bool _isProcessing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialFilePath != null && widget.initialFileName != null) {
+      _loadInitialFile();
+    }
+  }
+
+  Future<void> _loadInitialFile() async {
+    final pdfService = ref.read(pdfServiceProvider);
+    final thumbs = await pdfService.renderAllPages(widget.initialFilePath!, width: 150);
+    if (!mounted) return;
+    setState(() {
+      _file = File(widget.initialFilePath!);
+      _fileName = widget.initialFileName;
+      _thumbnails = thumbs;
+      _selected
+        ..clear()
+        ..addAll(List.generate(thumbs.length, (i) => i));
+    });
+  }
 
   Future<void> _pickFile() async {
     final fileService = ref.read(fileServiceProvider);

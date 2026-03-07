@@ -23,17 +23,17 @@ abstract final class AppRouter {
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
   static final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
-  static Widget _resolveToolPage(String toolId) {
+  static Widget _resolveToolPage(String toolId, String? initialFilePath, String? initialFileName) {
     return switch (toolId) {
-      ToolRoutes.merge => const MergePage(),
-      ToolRoutes.split => const SplitPage(),
-      ToolRoutes.rotate || ToolRoutes.reorder => const RotatePage(),
-      ToolRoutes.compress => const CompressPage(),
+      ToolRoutes.merge => MergePage(initialFilePath: initialFilePath, initialFileName: initialFileName),
+      ToolRoutes.split => SplitPage(initialFilePath: initialFilePath, initialFileName: initialFileName),
+      ToolRoutes.rotate || ToolRoutes.reorder => RotatePage(initialFilePath: initialFilePath, initialFileName: initialFileName),
+      ToolRoutes.compress => CompressPage(initialFilePath: initialFilePath, initialFileName: initialFileName),
       ToolRoutes.imgToPdf => const ImgToPdfPage(),
-      ToolRoutes.pdfToImg => const PdfToImgPage(),
-      ToolRoutes.encrypt => const EncryptPage(),
-      ToolRoutes.unlock => const UnlockPage(),
-      ToolRoutes.sanitize => const SanitizePage(),
+      ToolRoutes.pdfToImg => PdfToImgPage(initialFilePath: initialFilePath, initialFileName: initialFileName),
+      ToolRoutes.encrypt => EncryptPage(initialFilePath: initialFilePath, initialFileName: initialFileName),
+      ToolRoutes.unlock => UnlockPage(initialFilePath: initialFilePath, initialFileName: initialFileName),
+      ToolRoutes.sanitize => SanitizePage(initialFilePath: initialFilePath, initialFileName: initialFileName),
       _ => PlaceholderToolPage(toolId: toolId),
     };
   }
@@ -81,7 +81,10 @@ abstract final class AppRouter {
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: (context, state) {
           final toolId = state.pathParameters['toolId']!;
-          return MaterialPage(child: _resolveToolPage(toolId));
+          final extra = state.extra as Map<String, dynamic>?;
+          final initialFilePath = extra?['initialFilePath'] as String?;
+          final initialFileName = extra?['initialFileName'] as String?;
+          return MaterialPage(child: _resolveToolPage(toolId, initialFilePath, initialFileName));
         },
       ),
       ShellRoute(

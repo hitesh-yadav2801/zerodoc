@@ -7,12 +7,10 @@ import 'package:zerodoc/core/constants/app_strings.dart';
 import 'package:zerodoc/core/constants/compression_level.dart';
 import 'package:zerodoc/core/theme/app_colors.dart';
 import 'package:zerodoc/core/theme/app_typography.dart';
-import 'package:zerodoc/features/home/presentation/providers/desk_provider.dart';
 import 'package:zerodoc/shared/providers/app_version_provider.dart';
 import 'package:zerodoc/shared/providers/default_compression_provider.dart';
 import 'package:zerodoc/shared/providers/keep_originals_provider.dart';
 import 'package:zerodoc/shared/providers/theme_mode_provider.dart';
-import 'package:zerodoc/shared/widgets/app_snackbar.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -135,17 +133,6 @@ class SettingsPage extends ConsumerWidget {
                   },
                 ),
               ],
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xxxl),
-
-          Center(
-            child: TextButton(
-              onPressed: () => _confirmClearFiles(context, ref),
-              child: Text(
-                'Clear processed files',
-                style: AppTypography.label(color: c.terracotta),
-              ),
             ),
           ),
           const SizedBox(height: AppSpacing.xxxl),
@@ -312,59 +299,6 @@ class SettingsPage extends ConsumerWidget {
         );
       },
     ));
-  }
-
-  void _confirmClearFiles(BuildContext context, WidgetRef ref) {
-    final c = AppColors.of(context);
-    unawaited(
-      showDialog<void>(
-        context: context,
-        builder: (dialogContext) => AlertDialog(
-        backgroundColor: c.paperCard,
-        title: Text(
-          'Clear all files?',
-          style: AppTypography.sectionHeader(color: c.ink),
-        ),
-        content: Text(
-          'This will permanently delete all processed files from this '
-          'device. This action cannot be undone.',
-          style: AppTypography.body(color: c.inkMuted),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(
-              'Cancel',
-              style: AppTypography.label(color: c.inkMuted),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              unawaited(_performClear(context, ref));
-            },
-            child: Text(
-              'Clear',
-              style: AppTypography.label(color: c.terracotta),
-            ),
-          ),
-        ],
-      ),
-    ));
-  }
-
-  Future<void> _performClear(BuildContext context, WidgetRef ref) async {
-    final failure = await ref.read(deskProvider.notifier).clearAll();
-    if (!context.mounted) return;
-    if (failure != null) {
-      AppSnackBar.show(context, message: failure.message, isError: true);
-    } else {
-      AppSnackBar.show(
-        context,
-        message: 'All processed files cleared',
-        isSuccess: true,
-      );
-    }
   }
 
   void _showThemePicker(

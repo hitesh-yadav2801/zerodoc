@@ -24,7 +24,14 @@ class _PickedFile {
 }
 
 class MergePage extends ConsumerStatefulWidget {
-  const MergePage({super.key});
+  const MergePage({
+    super.key,
+    this.initialFilePath,
+    this.initialFileName,
+  });
+
+  final String? initialFilePath;
+  final String? initialFileName;
 
   @override
   ConsumerState<MergePage> createState() => _MergePageState();
@@ -33,6 +40,27 @@ class MergePage extends ConsumerStatefulWidget {
 class _MergePageState extends ConsumerState<MergePage> {
   final _files = <_PickedFile>[];
   bool _isProcessing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialFilePath != null && widget.initialFileName != null) {
+      _loadInitialFile();
+    }
+  }
+
+  Future<void> _loadInitialFile() async {
+    final pdfService = ref.read(pdfServiceProvider);
+    final count = await pdfService.getPageCount(widget.initialFilePath!);
+    if (!mounted) return;
+    setState(() {
+      _files.add(_PickedFile(
+        file: File(widget.initialFilePath!),
+        name: widget.initialFileName!,
+        pageCount: count,
+      ));
+    });
+  }
 
   Future<void> _pickFile() async {
     final fileService = ref.read(fileServiceProvider);

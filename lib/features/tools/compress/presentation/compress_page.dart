@@ -22,7 +22,14 @@ import 'package:zerodoc/shared/widgets/tool_screen_shell.dart';
 
 
 class CompressPage extends ConsumerStatefulWidget {
-  const CompressPage({super.key});
+  const CompressPage({
+    super.key,
+    this.initialFilePath,
+    this.initialFileName,
+  });
+
+  final String? initialFilePath;
+  final String? initialFileName;
 
   @override
   ConsumerState<CompressPage> createState() => _CompressPageState();
@@ -46,6 +53,23 @@ class _CompressPageState extends ConsumerState<CompressPage> {
   void initState() {
     super.initState();
     _level = ref.read(defaultCompressionProvider);
+    if (widget.initialFilePath != null && widget.initialFileName != null) {
+      _loadInitialFile();
+    }
+  }
+
+  Future<void> _loadInitialFile() async {
+    final pdfService = ref.read(pdfServiceProvider);
+    final count = await pdfService.getPageCount(widget.initialFilePath!);
+    final f = File(widget.initialFilePath!);
+    final stat = f.statSync();
+    if (!mounted) return;
+    setState(() {
+      _file = f;
+      _fileName = widget.initialFileName;
+      _pageCount = count;
+      _sizeBytes = stat.size;
+    });
   }
 
   Future<void> _pickFile() async {

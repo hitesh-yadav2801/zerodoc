@@ -16,7 +16,14 @@ import 'package:zerodoc/shared/widgets/imported_file_card.dart';
 import 'package:zerodoc/shared/widgets/tool_screen_shell.dart';
 
 class EncryptPage extends ConsumerStatefulWidget {
-  const EncryptPage({super.key});
+  const EncryptPage({
+    super.key,
+    this.initialFilePath,
+    this.initialFileName,
+  });
+
+  final String? initialFilePath;
+  final String? initialFileName;
 
   @override
   ConsumerState<EncryptPage> createState() => _EncryptPageState();
@@ -29,6 +36,23 @@ class _EncryptPageState extends ConsumerState<EncryptPage> {
   final _confirmController = TextEditingController();
   bool _obscurePassword = true;
   bool _isProcessing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialFilePath != null && widget.initialFileName != null) {
+      _loadInitialFile();
+    }
+  }
+
+  Future<void> _loadInitialFile() async {
+    final f = File(widget.initialFilePath!);
+    if (!mounted) return;
+    setState(() {
+      _file = f;
+      _fileName = widget.initialFileName;
+    });
+  }
 
   bool get _canEncrypt =>
       _file != null &&
