@@ -16,7 +16,14 @@ import 'package:zerodoc/shared/widgets/imported_file_card.dart';
 import 'package:zerodoc/shared/widgets/tool_screen_shell.dart';
 
 class SanitizePage extends ConsumerStatefulWidget {
-  const SanitizePage({super.key});
+  const SanitizePage({
+    super.key,
+    this.initialFilePath,
+    this.initialFileName,
+  });
+
+  final String? initialFilePath;
+  final String? initialFileName;
 
   @override
   ConsumerState<SanitizePage> createState() => _SanitizePageState();
@@ -26,6 +33,23 @@ class _SanitizePageState extends ConsumerState<SanitizePage> {
   File? _file;
   String? _fileName;
   bool _isProcessing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialFilePath != null && widget.initialFileName != null) {
+      _loadInitialFile();
+    }
+  }
+
+  Future<void> _loadInitialFile() async {
+    final f = File(widget.initialFilePath!);
+    if (!mounted) return;
+    setState(() {
+      _file = f;
+      _fileName = widget.initialFileName;
+    });
+  }
 
   Future<void> _pickFile() async {
     final fileService = ref.read(fileServiceProvider);

@@ -18,7 +18,14 @@ import 'package:zerodoc/shared/widgets/imported_file_card.dart';
 import 'package:zerodoc/shared/widgets/tool_screen_shell.dart';
 
 class SplitPage extends ConsumerStatefulWidget {
-  const SplitPage({super.key});
+  const SplitPage({
+    super.key,
+    this.initialFilePath,
+    this.initialFileName,
+  });
+
+  final String? initialFilePath;
+  final String? initialFileName;
 
   @override
   ConsumerState<SplitPage> createState() => _SplitPageState();
@@ -30,6 +37,26 @@ class _SplitPageState extends ConsumerState<SplitPage> {
   List<Uint8List?> _thumbnails = [];
   final _selected = <int>{};
   bool _isProcessing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialFilePath != null && widget.initialFileName != null) {
+      _loadInitialFile();
+    }
+  }
+
+  Future<void> _loadInitialFile() async {
+    final pdfService = ref.read(pdfServiceProvider);
+    final thumbs = await pdfService.renderAllPages(widget.initialFilePath!, width: 150);
+    if (!mounted) return;
+    setState(() {
+      _file = File(widget.initialFilePath!);
+      _fileName = widget.initialFileName;
+      _thumbnails = thumbs;
+      _selected.clear();
+    });
+  }
 
   Future<void> _pickFile() async {
     final fileService = ref.read(fileServiceProvider);

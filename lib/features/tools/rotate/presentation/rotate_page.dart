@@ -8,7 +8,14 @@ import 'package:zerodoc/shared/widgets/tool_screen_shell.dart';
 
 /// Rotate & Reorder: picks a file then opens the Workbench directly.
 class RotatePage extends ConsumerWidget {
-  const RotatePage({super.key});
+  const RotatePage({
+    super.key,
+    this.initialFilePath,
+    this.initialFileName,
+  });
+
+  final String? initialFilePath;
+  final String? initialFileName;
 
   Future<void> _pickAndOpen(BuildContext context, WidgetRef ref) async {
     final fileService = ref.read(fileServiceProvider);
